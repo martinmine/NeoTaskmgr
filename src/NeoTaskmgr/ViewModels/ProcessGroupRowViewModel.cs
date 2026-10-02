@@ -20,6 +20,7 @@ public sealed class ProcessGroupRowViewModel : ObservableObject
 
     private bool _isExpanded;
     private long _totalMemory = 1;
+    private string? _displayName;
 
     public ProcessGroupRowViewModel(bool isChild, Action<ProcessGroupRowViewModel> toggleExpanded)
     {
@@ -50,7 +51,8 @@ public sealed class ProcessGroupRowViewModel : ObservableObject
     public string ExpandGlyph => IsExpanded ? "" : ""; // ChevronDown / ChevronRight
     public string ExpandText => Strings.Get(IsExpanded ? "Collapse" : "Expand");
 
-    public string Name => CanExpand ? $"{Root.DisplayName} ({Processes.Count})" : Root.DisplayName;
+    public string Name => CanExpand ? $"{DisplayName} ({Processes.Count})" : DisplayName;
+    private string DisplayName => _displayName ?? Root.DisplayName;
     public string? ImagePath => Root.Details.ImagePath;
     public string PidText => CanExpand ? string.Empty : Root.Counters.Pid.ToString(CultureInfo.CurrentCulture);
     public string ProcessName => Root.Counters.Name;
@@ -92,13 +94,15 @@ public sealed class ProcessGroupRowViewModel : ObservableObject
     /// <summary>Processes in the order to end them: the ones started last first.</summary>
     public IEnumerable<ProcessKey> KeysForEnding => Processes.Reverse().Select(p => p.Key);
 
-    public void Update(IReadOnlyList<ProcessInfo> processes, ProcessCategory category, long totalMemory)
+    /// <param name="displayName">A name to show instead of the process's own, e.g. for service hosts.</param>
+    public void Update(IReadOnlyList<ProcessInfo> processes, ProcessCategory category, long totalMemory, string? displayName = null)
     {
-        if (category != Category || totalMemory != _totalMemory || !processes.SequenceEqual(Processes))
+        if (category != Category || totalMemory != _totalMemory || displayName != _displayName || !processes.SequenceEqual(Processes))
         {
             Processes = processes;
             Category = category;
             _totalMemory = Math.Max(1, totalMemory);
+            _displayName = displayName;
             OnPropertyChanged(string.Empty); // All properties derive from the processes.
         }
     }

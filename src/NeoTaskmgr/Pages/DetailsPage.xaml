@@ -60,6 +60,7 @@
                     <MenuFlyoutItem x:Uid="SetAffinityMenuItem" Command="{x:Bind ViewModel.SetAffinityCommand}" />
                     <MenuFlyoutSeparator />
                     <MenuFlyoutItem x:Uid="CreateDumpFileMenuItem" Command="{x:Bind ViewModel.CreateDumpFileCommand}" />
+                    <MenuFlyoutItem x:Uid="GoToServicesMenuItem" Command="{x:Bind ViewModel.GoToServicesCommand}" />
                     <MenuFlyoutSeparator />
                     <MenuFlyoutItem x:Uid="OpenFileLocationMenuItem" Command="{x:Bind ViewModel.OpenFileLocationCommand}" />
                     <MenuFlyoutItem x:Uid="SearchOnlineMenuItem" Command="{x:Bind ViewModel.SearchOnlineCommand}" />

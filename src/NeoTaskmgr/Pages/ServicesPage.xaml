@@ -2,12 +2,73 @@
 <Page
     x:Class="NeoTaskmgr.Pages.ServicesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Padding="24,16" RowSpacing="16">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:NeoTaskmgr.Controls"
+    xmlns:vm="using:NeoTaskmgr.ViewModels">
+    <Grid RowSpacing="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock x:Uid="ServicesPageTitle" Style="{StaticResource SubtitleTextBlockStyle}" />
+
+        <Grid Padding="24,8,16,0">
+            <TextBlock
+                x:Uid="ServicesPageTitle"
+                VerticalAlignment="Center"
+                Style="{StaticResource SubtitleTextBlockStyle}" />
+            <CommandBar HorizontalAlignment="Right" DefaultLabelPosition="Right">
+                <AppBarButton x:Uid="StartServiceButton" Command="{x:Bind ViewModel.StartCommand}">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE768;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="StopServiceButton" Command="{x:Bind ViewModel.StopCommand}">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE71A;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="RestartServiceButton" Command="{x:Bind ViewModel.RestartCommand}">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE72C;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Uid="OpenServicesButton" Command="{x:Bind ViewModel.OpenServicesCommand}">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE8A7;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </CommandBar>
+        </Grid>
+
+        <controls:DataTable
+            Grid.Row="1"
+            Columns="{x:Bind ViewModel.Columns}"
+            ItemsSource="{x:Bind ViewModel.Rows}"
+            SelectedItem="{x:Bind ViewModel.SelectedRow, Mode=TwoWay}">
+            <controls:DataTable.RowContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyoutItem x:Uid="StartServiceMenuItem" Command="{x:Bind ViewModel.StartCommand}" />
+                    <MenuFlyoutItem x:Uid="StopServiceMenuItem" Command="{x:Bind ViewModel.StopCommand}" />
+                    <MenuFlyoutItem x:Uid="RestartServiceMenuItem" Command="{x:Bind ViewModel.RestartCommand}" />
+                    <MenuFlyoutSeparator />
+                    <MenuFlyoutItem x:Uid="OpenServicesMenuItem" Command="{x:Bind ViewModel.OpenServicesCommand}" />
+                    <MenuFlyoutItem x:Uid="SearchOnlineMenuItem" Command="{x:Bind ViewModel.SearchOnlineCommand}" />
+                    <MenuFlyoutItem x:Uid="GoToDetailsMenuItem" Command="{x:Bind ViewModel.GoToDetailsCommand}" />
+                </MenuFlyout>
+            </controls:DataTable.RowContextFlyout>
+
+            <!-- One cell per column, in the order of ServicesViewModel.Columns. -->
+            <controls:DataTable.ItemTemplate>
+                <DataTemplate x:DataType="vm:ServiceRowViewModel">
+                    <controls:TableRowPanel>
+                        <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
+                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind PidText, Mode=OneWay}" />
+                        <TextBlock Text="{x:Bind DisplayName, Mode=OneWay}" />
+                        <TextBlock Text="{x:Bind StatusText, Mode=OneWay}" />
+                        <TextBlock Text="{x:Bind Group, Mode=OneWay}" />
+                    </controls:TableRowPanel>
+                </DataTemplate>
+            </controls:DataTable.ItemTemplate>
+        </controls:DataTable>
     </Grid>
 </Page>

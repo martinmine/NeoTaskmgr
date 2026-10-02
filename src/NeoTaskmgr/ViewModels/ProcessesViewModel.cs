@@ -6,6 +6,7 @@ using NeoTaskmgr.Core.Formatting;
 using NeoTaskmgr.Core.Performance;
 using NeoTaskmgr.Core.Processes;
 using NeoTaskmgr.Core.Sampling;
+using NeoTaskmgr.Core.Services;
 using NeoTaskmgr.Core.Shell;
 using NeoTaskmgr.Mvvm;
 
@@ -26,6 +27,7 @@ public sealed class ProcessesViewModel : ObservableObject
 
     private Dictionary<ProcessKey, ProcessGroupRowViewModel> _groupRows = []; // By the group's root process.
     private Dictionary<ProcessKey, ProcessGroupRowViewModel> _childRows = []; // By process.
+    private ILookup<int, ServiceInfo> _servicesByPid = Enumerable.Empty<ServiceInfo>().ToLookup(s => s.Pid);
     private string _search = string.Empty;
     private object? _selectedRow;
     private bool _isSyncingRows;
@@ -70,7 +72,9 @@ public sealed class ProcessesViewModel : ObservableObject
             () => SelectedProcess?.Window is not null);
         CreateDumpFileCommand = new RelayCommand(() => _ = _runner.CreateDumpFileAsync(SelectedProcess!.Root.Key, SelectedProcess.Root.Counters.Name),
             () => SelectedProcess is not null);
-        GoToDetailsCommand = new RelayCommand(() => GoToDetailsRequested?.Invoke(SelectedProcess!.Root.Key), () => SelectedProcess is not null);
+        GoToDetailsCommand = new RelayCommand(() => GoToDetailsRequested?.Invoke(SelectedProcess!.Root.Counters.Pid), () => SelectedProcess is not null);
+        GoToServicesCommand = new RelayCommand(() => GoToServicesRequested?.Invoke(SelectedProcess!.Root.Counters.Pid),
+            () => SelectedProcess is not null && _servicesByPid.Contains(SelectedProcess.Root.Counters.Pid));
         OpenFileLocationCommand = new RelayCommand(() => _ = _runner.OpenFileLocationAsync(SelectedProcess!.ImagePath!), () => SelectedProcess?.ImagePath is not null);
         SearchOnlineCommand = new RelayCommand(() => _ = _runner.SearchOnlineAsync(SelectedProcess!.Root), () => SelectedProcess is not null);
         PropertiesCommand = new RelayCommand(() => _ = _runner.ShowPropertiesAsync(SelectedProcess!.ImagePath!), () => SelectedProcess?.ImagePath is not null);
@@ -80,8 +84,11 @@ public sealed class ProcessesViewModel : ObservableObject
         Columns.Sort(Columns[0]);
     }
 
-    /// <summary>Asks the window to show the process on the Details page.</summary>
-    public event Action<ProcessKey>? GoToDetailsRequested;
+    /// <summary>Asks the window to show the process (by PID) on the Details page.</summary>
+    public event Action<int>? GoToDetailsRequested;
+
+    /// <summary>Asks the window to show the services hosted by the process (by PID).</summary>
+    public event Action<int>? GoToServicesRequested;
 
     public TableColumns Columns { get; }
 
@@ -112,6 +119,7 @@ public sealed class ProcessesViewModel : ObservableObject
     public RelayCommand SwitchToCommand { get; }
     public RelayCommand CreateDumpFileCommand { get; }
     public RelayCommand GoToDetailsCommand { get; }
+    public RelayCommand GoToServicesCommand { get; }
     public RelayCommand OpenFileLocationCommand { get; }
     public RelayCommand SearchOnlineCommand { get; }
     public RelayCommand PropertiesCommand { get; }
@@ -125,6 +133,7 @@ public sealed class ProcessesViewModel : ObservableObject
         var processes = snapshot.Processes.Processes;
         var performance = snapshot.Performance;
         var totalMemory = performance.Memory.TotalPhysical;
+        _servicesByPid = snapshot.Services.Where(s => s.Pid != 0).ToLookup(s => s.Pid);
         UpdateSummaries(performance);
 
         // Rebuilding the dictionaries drops rows of exited processes; existing rows are reused to keep their state.
@@ -133,7 +142,7 @@ public sealed class ProcessesViewModel : ObservableObject
         foreach (var group in ProcessGrouper.Group(processes, WindowsDirectory))
         {
             var row = _groupRows.GetValueOrDefault(group.Root.Key) ?? new ProcessGroupRowViewModel(isChild: false, ToggleExpanded);
-            row.Update(group.Processes, group.Category, totalMemory);
+            row.Update(group.Processes, group.Category, totalMemory, GetServiceHostName(group.Root));
             groupRows[group.Root.Key] = row;
 
             if (group.Processes.Count > 1)
@@ -141,7 +150,7 @@ public sealed class ProcessesViewModel : ObservableObject
                 foreach (var process in group.Processes)
                 {
                     var child = _childRows.GetValueOrDefault(process.Key) ?? new ProcessGroupRowViewModel(isChild: true, ToggleExpanded);
-                    child.Update([process], group.Category, totalMemory);
+                    child.Update([process], group.Category, totalMemory, GetServiceHostName(process));
                     childRows[process.Key] = child;
                 }
             }
@@ -150,6 +159,22 @@ public sealed class ProcessesViewModel : ObservableObject
         _groupRows = groupRows;
         _childRows = childRows;
         Refresh();
+    }
+
+    /// <summary>
+    /// Names a service host process after its service ("Service Host: Windows Audio"), or after its group when it
+    /// hosts several; null for other processes.
+    /// </summary>
+    private string? GetServiceHostName(ProcessInfo process)
+    {
+        var services = _servicesByPid[process.Counters.Pid].ToList();
+        if (services.Count == 0 || !process.Counters.Name.Equals("svchost.exe", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var name = services.Count == 1 ? services[0].DisplayName : services[0].Group ?? services[0].DisplayName;
+        return Strings.Format("ServiceHostName", name);
     }
 
     /// <summary>Shows system-wide totals above the columns, like Task Manager.</summary>
@@ -249,7 +274,7 @@ public sealed class ProcessesViewModel : ObservableObject
         foreach (var command in new[]
                  {
                      EndTaskCommand, RestartExplorerCommand, ToggleEfficiencyModeCommand, SuspendCommand, ResumeCommand, SwitchToCommand,
-                     CreateDumpFileCommand, GoToDetailsCommand, OpenFileLocationCommand, SearchOnlineCommand, PropertiesCommand,
+                     CreateDumpFileCommand, GoToDetailsCommand, GoToServicesCommand, OpenFileLocationCommand, SearchOnlineCommand, PropertiesCommand,
                  })
         {
             command.NotifyCanExecuteChanged();

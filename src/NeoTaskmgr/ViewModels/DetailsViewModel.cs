@@ -4,6 +4,7 @@ using System.Globalization;
 using NeoTaskmgr.Controls;
 using NeoTaskmgr.Core.Collections;
 using NeoTaskmgr.Core.Processes;
+using NeoTaskmgr.Core.Sampling;
 using NeoTaskmgr.Mvvm;
 
 namespace NeoTaskmgr.ViewModels;
@@ -14,6 +15,7 @@ public sealed class DetailsViewModel : ObservableObject
     private readonly ProcessCommandRunner _runner;
     private readonly Dictionary<ProcessKey, ProcessRowViewModel> _rows = [];
     private ProcessSnapshot _snapshot = new([]);
+    private HashSet<int> _servicePids = [];
     private string _search = string.Empty;
     private ProcessRowViewModel? _selectedRow;
     private bool _isSyncingRows;
@@ -60,6 +62,8 @@ public sealed class DetailsViewModel : ObservableObject
         SearchOnlineCommand = new RelayCommand(() => _ = _runner.SearchOnlineAsync(SelectedRow!.Info), HasSelection);
         PropertiesCommand = new RelayCommand(() => _ = _runner.ShowPropertiesAsync(SelectedRow!.ImagePath), HasImagePath);
         RunNewTaskCommand = new RelayCommand(() => _ = _runner.RunNewTaskAsync());
+        GoToServicesCommand = new RelayCommand(() => GoToServicesRequested?.Invoke(SelectedRow!.Key.Pid),
+            () => SelectedRow is not null && _servicePids.Contains(SelectedRow.Key.Pid));
 
         Columns.SortChanged += (_, _) => Refresh();
         Columns.Sort(Columns[0]);
@@ -95,11 +99,15 @@ public sealed class DetailsViewModel : ObservableObject
     public RelayCommand SearchOnlineCommand { get; }
     public RelayCommand PropertiesCommand { get; }
     public RelayCommand RunNewTaskCommand { get; }
+    public RelayCommand GoToServicesCommand { get; }
+
+    /// <summary>Asks the window to show the services hosted by the process (by PID).</summary>
+    public event Action<int>? GoToServicesRequested;
 
     /// <summary>Selects the process (clearing any search that hides it), e.g. for "Go to details".</summary>
-    public void Select(ProcessKey process)
+    public void Select(int pid)
     {
-        if (_rows.TryGetValue(process, out var row))
+        if (_rows.Values.FirstOrDefault(r => r.Key.Pid == pid) is { } row)
         {
             ApplySearch(string.Empty);
             SelectedRow = row;
@@ -107,9 +115,11 @@ public sealed class DetailsViewModel : ObservableObject
     }
 
     /// <summary>Updates the rows from a new snapshot. Must be called on the UI thread.</summary>
-    public void Apply(ProcessSnapshot snapshot)
+    public void Apply(SystemSnapshot systemSnapshot)
     {
+        var snapshot = systemSnapshot.Processes;
         _snapshot = snapshot;
+        _servicePids = systemSnapshot.Services.Where(s => s.Pid != 0).Select(s => s.Pid).ToHashSet();
         var alive = new HashSet<ProcessKey>(snapshot.Processes.Count);
         foreach (var process in snapshot.Processes)
         {
@@ -177,7 +187,7 @@ public sealed class DetailsViewModel : ObservableObject
         foreach (var command in new[]
                  {
                      EndTaskCommand, EndProcessTreeCommand, ToggleEfficiencyModeCommand, SetAffinityCommand, CreateDumpFileCommand,
-                     OpenFileLocationCommand, SearchOnlineCommand, PropertiesCommand,
+                     OpenFileLocationCommand, SearchOnlineCommand, PropertiesCommand, GoToServicesCommand,
                  })
         {
             command.NotifyCanExecuteChanged();

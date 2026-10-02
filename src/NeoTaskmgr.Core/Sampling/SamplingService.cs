@@ -1,12 +1,13 @@
 using System.Diagnostics;
 using NeoTaskmgr.Core.Performance;
 using NeoTaskmgr.Core.Processes;
+using NeoTaskmgr.Core.Services;
 using NeoTaskmgr.Core.Settings;
 
 namespace NeoTaskmgr.Core.Sampling;
 
 /// <summary>Everything collected in one sampling tick.</summary>
-public sealed record SystemSnapshot(ProcessSnapshot Processes, PerformanceSnapshot Performance);
+public sealed record SystemSnapshot(ProcessSnapshot Processes, PerformanceSnapshot Performance, IReadOnlyList<ServiceInfo> Services);
 
 /// <summary>
 /// Collects a <see cref="SystemSnapshot"/> on a background thread at the configured <see cref="UpdateSpeed"/>.
@@ -57,6 +58,7 @@ public sealed class SamplingService(UpdateSpeed speed) : IDisposable
         using var processes = new ProcessProvider();
         using var performance = new PerformanceProvider();
         using var networkActivity = new NetworkActivityMonitor();
+        using var services = new ServiceProvider();
         var clock = Stopwatch.StartNew();
 
         while (!stop.IsCancellationRequested)
@@ -66,7 +68,7 @@ public sealed class SamplingService(UpdateSpeed speed) : IDisposable
                 var timestamp = clock.Elapsed;
                 var (performanceSnapshot, gpuByPid) = performance.Sample(timestamp);
                 var processSnapshot = processes.Sample(timestamp, gpuByPid, networkActivity.TakeBytes());
-                Sampled?.Invoke(new SystemSnapshot(processSnapshot, performanceSnapshot));
+                Sampled?.Invoke(new SystemSnapshot(processSnapshot, performanceSnapshot, services.Sample()));
             }
             catch (Exception e)
             {

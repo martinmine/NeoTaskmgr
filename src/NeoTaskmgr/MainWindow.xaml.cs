@@ -1,10 +1,10 @@
 using System.ComponentModel;
+using System.Globalization;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using NeoTaskmgr.Core;
-using NeoTaskmgr.Core.Processes;
 using NeoTaskmgr.Core.Settings;
 using NeoTaskmgr.Pages;
 using NeoTaskmgr.Services;
@@ -49,6 +49,9 @@ public sealed partial class MainWindow : Window
         _dialogs.WindowId = AppWindow.Id;
         NotElevatedInfoBar.IsOpen = !Elevation.IsElevated;
         viewModel.Processes.GoToDetailsRequested += GoToDetails;
+        viewModel.Processes.GoToServicesRequested += GoToServices;
+        viewModel.Details.GoToServicesRequested += GoToServices;
+        viewModel.Services.GoToDetailsRequested += GoToDetails;
 
         ApplyTheme();
         ApplyAlwaysOnTop();
@@ -64,8 +67,7 @@ public sealed partial class MainWindow : Window
 
     private void NavView_Loaded(object sender, RoutedEventArgs e)
     {
-        var startTag = _settings.Current.StartPage.ToString();
-        NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().First(item => (string)item.Tag == startTag);
+        Navigate(_settings.Current.StartPage);
     }
 
     private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -89,15 +91,26 @@ public sealed partial class MainWindow : Window
         AppPage.Processes => _viewModel.Processes,
         AppPage.Performance => _viewModel.Performance,
         AppPage.Details => _viewModel.Details,
+        AppPage.Services => _viewModel.Services,
         _ => null,
     };
 
-    private void GoToDetails(ProcessKey process)
+    private void GoToDetails(int pid)
     {
         SearchBox.Text = string.Empty;
-        _viewModel.Details.Select(process);
-        NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().First(item => (string)item.Tag == nameof(AppPage.Details));
+        _viewModel.Details.Select(pid);
+        Navigate(AppPage.Details);
     }
+
+    /// <summary>Shows the Services page filtered to the services of the process.</summary>
+    private void GoToServices(int pid)
+    {
+        Navigate(AppPage.Services);
+        SearchBox.Text = pid.ToString(CultureInfo.CurrentCulture);
+    }
+
+    private void Navigate(AppPage page) =>
+        NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().First(item => (string)item.Tag == page.ToString());
 
     private void AppTitleBar_PaneToggleRequested(TitleBar sender, object args) => NavView.IsPaneOpen = !NavView.IsPaneOpen;
 

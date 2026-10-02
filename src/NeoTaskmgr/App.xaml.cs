@@ -24,7 +24,8 @@ public partial class App : Application
         var sampler = _sampler = new SamplingService(settings.Current.UpdateSpeed);
         var dialogs = new DialogService();
         var runner = new ProcessCommandRunner(dialogs, sampler.RefreshNow);
-        var viewModel = new MainViewModel(settings, new ProcessesViewModel(runner), new PerformanceViewModel(), new DetailsViewModel(runner));
+        var viewModel = new MainViewModel(
+            settings, new ProcessesViewModel(runner), new PerformanceViewModel(), new DetailsViewModel(runner), new ServicesViewModel(runner));
 
         var dispatcher = DispatcherQueue.GetForCurrentThread();
         sampler.Sampled += snapshot => dispatcher.TryEnqueue(() => viewModel.Apply(snapshot));

@@ -61,7 +61,8 @@ public sealed class ProcessGroupRowViewModel : ObservableObject
 
     public ProcessWindow? Window => Processes.Select(p => p.Window).FirstOrDefault(w => w is not null);
     public bool IsSuspended => Processes.All(p => p.Counters.IsSuspended);
-    public bool IsEfficiencyMode => Root.IsEfficiencyMode;
+    // Like Task Manager, an app is shown in efficiency mode if any of its processes is (browsers throttle only their child processes).
+    public bool IsEfficiencyMode => Processes.Any(p => p.IsEfficiencyMode);
     public bool IsExplorer => Root.Counters.Name.Equals("explorer.exe", StringComparison.OrdinalIgnoreCase);
 
     public string StatusText =>

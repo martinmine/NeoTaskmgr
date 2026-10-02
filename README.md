@@ -3,6 +3,9 @@
 A modern C# / WinUI 3 re-implementation of Windows Task Manager: Processes, Performance, App history, Startup apps,
 Users, Details and Services. See [docs/PLAN.md](docs/PLAN.md) for scope, architecture and decisions.
 
+<img width="1134" height="786" alt="image" src="https://github.com/user-attachments/assets/e68033a8-e5ee-4149-9c39-d02ea8ac17cf" />
+
+
 ## Requirements
 
 - Windows 11

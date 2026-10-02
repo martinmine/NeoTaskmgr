@@ -21,8 +21,8 @@ public sealed class DiskViewModel : PerformanceDeviceViewModel
     {
         _activeTime = AddStat("StatActiveTime");
         _responseTime = AddStat("StatResponseTime");
-        _readSpeed = AddStat("StatReadSpeed", newRow: true);
-        _writeSpeed = AddStat("StatWriteSpeed");
+        _readSpeed = AddStat("StatReadSpeed", newRow: true, line: StatLine.Solid);
+        _writeSpeed = AddStat("StatWriteSpeed", line: StatLine.Dashed);
         _capacity = AddProperty("StatCapacity");
         _formatted = AddProperty("StatFormatted");
         _systemDisk = AddProperty("StatSystemDisk");

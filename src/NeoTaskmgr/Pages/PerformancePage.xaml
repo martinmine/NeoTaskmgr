@@ -354,10 +354,28 @@
                                 </ItemsRepeater.Layout>
                                 <ItemsRepeater.ItemTemplate>
                                     <DataTemplate x:DataType="perf:StatViewModel">
-                                        <StackPanel MinWidth="56">
-                                            <TextBlock Style="{StaticResource GraphLabelStyle}" Text="{x:Bind Label}" />
-                                            <TextBlock Style="{StaticResource StatValueStyle}" Text="{x:Bind Value, Mode=OneWay}" />
-                                        </StackPanel>
+                                        <!-- Like Task Manager, a solid or dashed line ties the statistic to its series in the graph. -->
+                                        <Grid ColumnSpacing="6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Line
+                                                Width="2"
+                                                Stretch="Fill"
+                                                Stroke="{x:Bind local:XamlHelpers.DeviceBrush(Kind)}"
+                                                StrokeDashArray="{x:Bind local:XamlHelpers.StatLineDashes(Line)}"
+                                                StrokeThickness="2"
+                                                Visibility="{x:Bind local:XamlHelpers.StatLineVisibility(Line)}"
+                                                X1="0"
+                                                X2="0"
+                                                Y1="0"
+                                                Y2="1" />
+                                            <StackPanel Grid.Column="1" MinWidth="56">
+                                                <TextBlock Style="{StaticResource GraphLabelStyle}" Text="{x:Bind Label}" />
+                                                <TextBlock Style="{StaticResource StatValueStyle}" Text="{x:Bind Value, Mode=OneWay}" />
+                                            </StackPanel>
+                                        </Grid>
                                     </DataTemplate>
                                 </ItemsRepeater.ItemTemplate>
                             </ItemsRepeater>

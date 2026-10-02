@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 using NeoTaskmgr.ViewModels.Performance;
 using Windows.UI;
 
@@ -30,4 +31,11 @@ public static class XamlHelpers
         PerformanceDeviceKind.Network => Color.FromArgb(255, 167, 79, 1),
         _ => Color.FromArgb(255, 172, 57, 49),
     };
+
+    public static Brush DeviceBrush(PerformanceDeviceKind kind) => new SolidColorBrush(DeviceColor(kind));
+
+    public static Visibility StatLineVisibility(StatLine line) => line == StatLine.None ? Visibility.Collapsed : Visibility.Visible;
+
+    /// <summary>The dash pattern of a statistic's line, matching the graph's dashed second series.</summary>
+    public static DoubleCollection StatLineDashes(StatLine line) => line == StatLine.Dashed ? [1.5, 1] : [];
 }

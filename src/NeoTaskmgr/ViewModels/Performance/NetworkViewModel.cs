@@ -19,8 +19,8 @@ public sealed class NetworkViewModel : PerformanceDeviceViewModel
 
     public NetworkViewModel(string key) : base(key, PerformanceDeviceKind.Network)
     {
-        _send = AddStat("StatSend");
-        _receive = AddStat("StatReceive", newRow: true);
+        _send = AddStat("StatSend", line: StatLine.Dashed);
+        _receive = AddStat("StatReceive", newRow: true, line: StatLine.Solid);
         _adapterName = AddProperty("StatAdapterName");
         _connectionType = AddProperty("StatConnectionType");
         _ipv4 = AddProperty("StatIPv4");

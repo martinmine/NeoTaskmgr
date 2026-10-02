@@ -40,12 +40,27 @@ public sealed class GraphHistory(double maximum = 100) : ObservableObject
     }
 }
 
+/// <summary>The line beside a statistic that identifies its series in a graph, like Task Manager's read and write speeds.</summary>
+public enum StatLine
+{
+    None,
+    /// <summary>The graph's main, solid series.</summary>
+    Solid,
+    /// <summary>The graph's dashed second series.</summary>
+    Dashed,
+}
+
 /// <summary>A labeled value below the graphs: a large statistic, or a fact in the list beside them.</summary>
-public sealed class StatViewModel(string label) : ObservableObject
+public sealed class StatViewModel(string label, PerformanceDeviceKind kind = default, StatLine line = StatLine.None) : ObservableObject
 {
     private string _value = string.Empty;
 
     public string Label { get; } = label;
+
+    /// <summary>The device the statistic belongs to, which gives <see cref="Line"/> its color.</summary>
+    public PerformanceDeviceKind Kind { get; } = kind;
+
+    public StatLine Line { get; } = line;
 
     public string Value
     {
@@ -115,14 +130,14 @@ public abstract class PerformanceDeviceViewModel(string key, PerformanceDeviceKi
     /// <summary>Used by the list view as the device's accessible name, e.g. "CPU 6% 4.13 GHz".</summary>
     public override string ToString() => string.Join(", ", new[] { Title, Subtitle, Detail }.Where(s => s.Length > 0));
 
-    protected StatViewModel AddStat(string labelKey, bool newRow = false)
+    protected StatViewModel AddStat(string labelKey, bool newRow = false, StatLine line = StatLine.None)
     {
         if (newRow || StatRows.Count == 0)
         {
             StatRows.Add(new StatRow());
         }
 
-        var stat = new StatViewModel(Strings.Get(labelKey));
+        var stat = new StatViewModel(Strings.Get(labelKey), Kind, line);
         StatRows[^1].Stats.Add(stat);
         return stat;
     }

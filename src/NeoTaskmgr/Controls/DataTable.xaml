@@ -44,6 +44,16 @@
                 <ListView.ItemContainerTransitions>
                     <TransitionCollection />
                 </ListView.ItemContainerTransitions>
+                <!--
+                    By default the list keeps the first visible row in place when rows above it change. Rows are
+                    reordered on every update, so that anchor keeps changing and the list jumps up and down; keep the
+                    scroll position instead, like Task Manager.
+                -->
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsStackPanel ItemsUpdatingScrollMode="KeepScrollOffset" />
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
                 <ListView.ItemContainerStyle>
                     <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
                         <Setter Property="MinHeight" Value="30" />

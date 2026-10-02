@@ -49,6 +49,15 @@ public sealed partial class TableRowPanel : Panel
 
     protected override Size MeasureOverride(Size availableSize)
     {
+        // A newly realized row is measured before it is loaded. Find the columns now, so the row isn't laid out
+        // empty for a frame and only filled in on Loaded, which makes the list blink while scrolling.
+        if (_columns is null && FindTable()?.Columns is { } columns)
+        {
+            _columns = columns;
+            ApplyVisibility();
+            Attach();
+        }
+
         if (_columns is null)
         {
             return default;
@@ -128,13 +137,17 @@ public sealed partial class TableRowPanel : Panel
 
     private void ApplyLayout()
     {
+        ApplyVisibility();
+        InvalidateMeasure();
+    }
+
+    private void ApplyVisibility()
+    {
         for (var i = 0; i < Children.Count; i++)
         {
             var isVisible = _columns is not null && i < _columns.Count && _columns[i].IsVisible;
             Children[i].Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
         }
-
-        InvalidateMeasure();
     }
 
     private DataTable? FindTable()

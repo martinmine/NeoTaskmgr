@@ -37,6 +37,13 @@
                 ContextRequested="RowsList_ContextRequested"
                 SelectionChanged="RowsList_SelectionChanged"
                 SelectionMode="Single">
+                <!--
+                    No item animations: rows are reordered on every update (e.g. when sorted by CPU), and the ListView
+                    plays a move as a delete and an add, so the default transitions make the rows fade out and in.
+                -->
+                <ListView.ItemContainerTransitions>
+                    <TransitionCollection />
+                </ListView.ItemContainerTransitions>
                 <ListView.ItemContainerStyle>
                     <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="ListViewItem">
                         <Setter Property="MinHeight" Value="30" />

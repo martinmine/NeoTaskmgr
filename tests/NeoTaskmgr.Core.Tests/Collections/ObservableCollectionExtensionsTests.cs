@@ -42,6 +42,18 @@ public sealed class ObservableCollectionExtensionsTests
     }
 
     [Fact]
+    public void SyncWith_OneItemMovedToEnd_OnlyMovesThatItem()
+    {
+        var target = new ObservableCollection<string>(Items);
+        var changed = new List<object?>();
+        target.CollectionChanged += (_, e) => changed.AddRange([.. e.OldItems ?? Array.Empty<object>(), .. e.NewItems ?? Array.Empty<object>()]);
+
+        target.SyncWith(["b", "c", "d", "e", "a"]);
+
+        Assert.All(changed, item => Assert.Equal("a", item));
+    }
+
+    [Fact]
     public void SyncWith_NeverResets()
     {
         var target = new ObservableCollection<string>(Items);

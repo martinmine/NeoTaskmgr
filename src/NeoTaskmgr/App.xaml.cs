@@ -22,10 +22,11 @@ public partial class App : Application
         var settings = new SettingsViewModel(new SettingsStore(SettingsStore.DefaultFilePath));
         var sampler = _sampler = new SamplingService(settings.Current.UpdateSpeed);
         var dialogs = new DialogService();
-        var viewModel = new MainViewModel(settings, new DetailsViewModel(dialogs, sampler.RefreshNow));
+        var runner = new ProcessCommandRunner(dialogs, sampler.RefreshNow);
+        var viewModel = new MainViewModel(settings, new ProcessesViewModel(runner), new DetailsViewModel(runner));
 
         var dispatcher = DispatcherQueue.GetForCurrentThread();
-        sampler.Sampled += snapshot => dispatcher.TryEnqueue(() => viewModel.Details.Apply(snapshot.Processes));
+        sampler.Sampled += snapshot => dispatcher.TryEnqueue(() => viewModel.Apply(snapshot));
         settings.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(SettingsViewModel.UpdateSpeedIndex))

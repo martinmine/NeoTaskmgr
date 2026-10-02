@@ -1,18 +1,27 @@
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Windows.Storage.Pickers;
+using NeoTaskmgr.Core;
 
 namespace NeoTaskmgr.Services;
 
-/// <summary>Shows dialogs on behalf of view models. <see cref="XamlRoot"/> is set by the main window once loaded.</summary>
+/// <summary>Shows dialogs on behalf of view models. The window properties are set by the main window.</summary>
 public sealed class DialogService
 {
     public XamlRoot? XamlRoot { get; set; }
 
-    public async Task<bool> ConfirmAsync(string title, string message, string primaryButtonText)
+    /// <summary>The main window's handle, as owner for shell dialogs.</summary>
+    public nint WindowHandle { get; set; }
+
+    public WindowId WindowId { get; set; }
+
+    public async Task<bool> ConfirmAsync(string title, string message, string primaryButtonText, string? closeButtonText = null)
     {
         var dialog = Create(title, message);
         dialog.PrimaryButtonText = primaryButtonText;
-        dialog.CloseButtonText = Strings.Get("DialogCancel");
+        dialog.CloseButtonText = closeButtonText ?? Strings.Get("DialogCancel");
         dialog.DefaultButton = ContentDialogButton.Primary;
         return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
@@ -89,6 +98,55 @@ public sealed class DialogService
         }
 
         return processors.Where(p => p.CheckBox.IsChecked == true).Aggregate(0ul, (mask, p) => mask | p.Bit);
+    }
+
+    /// <summary>Asks for a command to run, like the Run dialog. Returns null if cancelled.</summary>
+    public async Task<(string Command, bool AsAdministrator)?> RunNewTaskAsync()
+    {
+        var command = new TextBox { PlaceholderText = Strings.Get("RunNewTaskPlaceholder"), MinWidth = 300 };
+        AutomationProperties.SetName(command, Strings.Get("RunNewTaskOpen"));
+        var browse = new Button { Content = Strings.Get("RunNewTaskBrowse") };
+        // When this app is elevated, everything it starts is elevated too.
+        var asAdministrator = new CheckBox
+        {
+            Content = Strings.Get(Elevation.IsElevated ? "RunNewTaskElevated" : "RunNewTaskAsAdministrator"),
+            IsChecked = Elevation.IsElevated,
+            IsEnabled = !Elevation.IsElevated,
+        };
+
+        var commandRow = new Grid { ColumnSpacing = 8, ColumnDefinitions = { new ColumnDefinition(), new ColumnDefinition { Width = GridLength.Auto } } };
+        Grid.SetColumn(browse, 1);
+        commandRow.Children.Add(command);
+        commandRow.Children.Add(browse);
+
+        var dialog = Create(Strings.Get("RunNewTaskTitle"), null);
+        dialog.Content = new StackPanel
+        {
+            Spacing = 12,
+            Children =
+            {
+                new TextBlock { Text = Strings.Get("RunNewTaskMessage"), TextWrapping = TextWrapping.Wrap },
+                commandRow,
+                asAdministrator,
+            },
+        };
+        dialog.PrimaryButtonText = Strings.Get("DialogOk");
+        dialog.CloseButtonText = Strings.Get("DialogCancel");
+        dialog.DefaultButton = ContentDialogButton.Primary;
+        dialog.IsPrimaryButtonEnabled = false;
+        command.TextChanged += (_, _) => dialog.IsPrimaryButtonEnabled = !string.IsNullOrWhiteSpace(command.Text);
+        browse.Click += async (_, _) =>
+        {
+            var picker = new FileOpenPicker(WindowId) { FileTypeFilter = { ".exe", ".com", ".bat", ".cmd", "*" } };
+            if (await picker.PickSingleFileAsync() is { } file)
+            {
+                command.Text = $"\"{file.Path}\"";
+            }
+        };
+
+        return await dialog.ShowAsync() == ContentDialogResult.Primary
+            ? (command.Text, asAdministrator.IsChecked == true)
+            : null;
     }
 
     private ContentDialog Create(string title, string? message) => new()

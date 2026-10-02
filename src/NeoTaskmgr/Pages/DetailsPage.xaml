@@ -21,6 +21,11 @@
                 VerticalAlignment="Center"
                 Style="{StaticResource SubtitleTextBlockStyle}" />
             <CommandBar HorizontalAlignment="Right" DefaultLabelPosition="Right">
+                <AppBarButton x:Uid="RunNewTaskButton" Command="{x:Bind ViewModel.RunNewTaskCommand}">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE7C4;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
                 <AppBarButton x:Uid="EndTaskButton" Command="{x:Bind ViewModel.EndTaskCommand}">
                     <AppBarButton.Icon>
                         <FontIcon Glyph="&#xE711;" />
@@ -30,6 +35,7 @@
         </Grid>
 
         <controls:DataTable
+            x:Name="Table"
             Grid.Row="1"
             Columns="{x:Bind ViewModel.Columns}"
             ItemsSource="{x:Bind ViewModel.Rows}"
@@ -38,6 +44,10 @@
                 <MenuFlyout Opening="RowMenu_Opening">
                     <MenuFlyoutItem x:Uid="EndTaskMenuItem" Command="{x:Bind ViewModel.EndTaskCommand}" />
                     <MenuFlyoutItem x:Uid="EndProcessTreeMenuItem" Command="{x:Bind ViewModel.EndProcessTreeCommand}" />
+                    <ToggleMenuFlyoutItem
+                        x:Uid="EfficiencyModeMenuItem"
+                        Command="{x:Bind ViewModel.ToggleEfficiencyModeCommand}"
+                        IsChecked="{x:Bind ViewModel.IsSelectedEfficiencyMode, Mode=OneWay}" />
                     <MenuFlyoutSeparator />
                     <MenuFlyoutSubItem x:Name="PriorityMenu" x:Uid="SetPriorityMenuItem">
                         <RadioMenuFlyoutItem x:Uid="PriorityRealTimeMenuItem" Command="{x:Bind ViewModel.SetPriorityCommand}" CommandParameter="RealTime" Tag="RealTime" />
@@ -49,7 +59,11 @@
                     </MenuFlyoutSubItem>
                     <MenuFlyoutItem x:Uid="SetAffinityMenuItem" Command="{x:Bind ViewModel.SetAffinityCommand}" />
                     <MenuFlyoutSeparator />
+                    <MenuFlyoutItem x:Uid="CreateDumpFileMenuItem" Command="{x:Bind ViewModel.CreateDumpFileCommand}" />
+                    <MenuFlyoutSeparator />
                     <MenuFlyoutItem x:Uid="OpenFileLocationMenuItem" Command="{x:Bind ViewModel.OpenFileLocationCommand}" />
+                    <MenuFlyoutItem x:Uid="SearchOnlineMenuItem" Command="{x:Bind ViewModel.SearchOnlineCommand}" />
+                    <MenuFlyoutItem x:Uid="PropertiesMenuItem" Command="{x:Bind ViewModel.PropertiesCommand}" />
                 </MenuFlyout>
             </controls:DataTable.RowContextFlyout>
 

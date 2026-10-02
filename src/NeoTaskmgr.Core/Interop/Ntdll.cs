@@ -16,6 +16,15 @@ internal static unsafe partial class Ntdll
     public static partial int NtQuerySystemInformation(int systemInformationClass, void* systemInformation, uint systemInformationLength, out uint returnLength);
 
     [LibraryImport("ntdll.dll")]
+    public static partial int NtSuspendProcess(SafeHandle processHandle);
+
+    [LibraryImport("ntdll.dll")]
+    public static partial int NtResumeProcess(SafeHandle processHandle);
+
+    [LibraryImport("ntdll.dll")]
+    public static partial uint RtlNtStatusToDosError(int status);
+
+    [LibraryImport("ntdll.dll")]
     public static partial int NtQueryInformationProcess(SafeHandle processHandle, int processInformationClass, void* processInformation, uint processInformationLength, out uint returnLength);
 }
 

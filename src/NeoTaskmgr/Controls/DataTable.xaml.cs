@@ -9,7 +9,7 @@ namespace NeoTaskmgr.Controls;
 
 /// <summary>
 /// A virtualized table with sortable, resizable and hideable columns.
-/// The <see cref="ItemTemplate"/> must have a <see cref="TableRowPanel"/> root with one cell per column, in column order.
+/// Each row template must have a <see cref="TableRowPanel"/> root with one cell per column, in column order.
 /// </summary>
 public sealed partial class DataTable : UserControl
 {
@@ -22,17 +22,32 @@ public sealed partial class DataTable : UserControl
     public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(
         nameof(ItemTemplate), typeof(DataTemplate), typeof(DataTable), new PropertyMetadata(null, (d, e) => ((DataTable)d).RowsList.ItemTemplate = (DataTemplate)e.NewValue));
 
+    public static readonly DependencyProperty ItemTemplateSelectorProperty = DependencyProperty.Register(
+        nameof(ItemTemplateSelector), typeof(DataTemplateSelector), typeof(DataTable),
+        new PropertyMetadata(null, (d, e) => ((DataTable)d).RowsList.ItemTemplateSelector = (DataTemplateSelector)e.NewValue));
+
     public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
         nameof(SelectedItem), typeof(object), typeof(DataTable), new PropertyMetadata(null, (d, e) => ((DataTable)d).RowsList.SelectedItem = e.NewValue));
 
     public static readonly DependencyProperty RowContextFlyoutProperty = DependencyProperty.Register(
         nameof(RowContextFlyout), typeof(FlyoutBase), typeof(DataTable), new PropertyMetadata(null));
 
-    private readonly Dictionary<TableColumn, FontIcon> _sortIcons = [];
+    private readonly Dictionary<TableColumn, HeaderCell> _headerCells = [];
+    private bool _isLoaded;
 
     public DataTable()
     {
         InitializeComponent();
+        Loaded += (_, _) =>
+        {
+            _isLoaded = true;
+            Attach(Columns);
+        };
+        Unloaded += (_, _) =>
+        {
+            _isLoaded = false;
+            Detach(Columns);
+        };
     }
 
     public TableColumns? Columns
@@ -53,6 +68,13 @@ public sealed partial class DataTable : UserControl
         set => SetValue(ItemTemplateProperty, value);
     }
 
+    /// <summary>Picks a template per row, for tables with different kinds of rows.</summary>
+    public DataTemplateSelector? ItemTemplateSelector
+    {
+        get => (DataTemplateSelector?)GetValue(ItemTemplateSelectorProperty);
+        set => SetValue(ItemTemplateSelectorProperty, value);
+    }
+
     public object? SelectedItem
     {
         get => GetValue(SelectedItemProperty);
@@ -66,72 +88,57 @@ public sealed partial class DataTable : UserControl
         set => SetValue(RowContextFlyoutProperty, value);
     }
 
+    public void ScrollIntoView(object item) => RowsList.ScrollIntoView(item);
+
     private void OnColumnsChanged(DependencyPropertyChangedEventArgs e)
     {
-        if (e.OldValue is TableColumns oldColumns)
-        {
-            oldColumns.SortChanged -= Columns_SortChanged;
-        }
+        Detach(e.OldValue as TableColumns);
 
         HeaderPanel.Children.Clear();
-        _sortIcons.Clear();
+        _headerCells.Clear();
         if (e.NewValue is TableColumns columns)
         {
             foreach (var column in columns)
             {
-                HeaderPanel.Children.Add(CreateHeaderCell(column));
+                var cell = new HeaderCell(column, () => Columns?.Sort(column));
+                _headerCells[column] = cell;
+                HeaderPanel.Children.Add(cell.Root);
             }
-
-            columns.SortChanged += Columns_SortChanged;
-            UpdateSortIcons();
         }
 
         HeaderPanel.Columns = Columns;
+        Attach(Columns);
     }
 
-    private Grid CreateHeaderCell(TableColumn column)
+    // The columns are owned by a view model that outlives this control, so only listen while loaded.
+    private void Attach(TableColumns? columns)
     {
-        var sortIcon = new FontIcon { FontSize = 10, Visibility = Visibility.Collapsed };
-        _sortIcons[column] = sortIcon;
-
-        var content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-        if (column.IsNumeric)
+        if (_isLoaded && columns is not null)
         {
-            content.Children.Add(sortIcon);
+            columns.SortChanged += Columns_SortChanged;
+            columns.SummaryChanged += Columns_SummaryChanged;
+            UpdateHeaders();
         }
-
-        content.Children.Add(new TextBlock { Text = column.Header, TextTrimming = TextTrimming.CharacterEllipsis });
-        if (!column.IsNumeric)
-        {
-            content.Children.Add(sortIcon);
-        }
-
-        var button = new Button
-        {
-            Content = content,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch,
-            HorizontalContentAlignment = column.IsNumeric ? HorizontalAlignment.Right : HorizontalAlignment.Left,
-            Padding = new Thickness(0, 0, 12, 0),
-            Background = null,
-            BorderThickness = new Thickness(0),
-            CornerRadius = new CornerRadius(0),
-        };
-        ToolTipService.SetToolTip(button, column.Header);
-        AutomationProperties.SetName(button, column.Header);
-        button.Click += (_, _) => Columns?.Sort(column);
-
-        return new Grid { Children = { button, new ColumnGripper(column) } };
     }
 
-    private void Columns_SortChanged(object? sender, EventArgs e) => UpdateSortIcons();
-
-    private void UpdateSortIcons()
+    private void Detach(TableColumns? columns)
     {
-        foreach (var (column, icon) in _sortIcons)
+        if (columns is not null)
         {
-            icon.Visibility = column == Columns?.SortColumn ? Visibility.Visible : Visibility.Collapsed;
-            icon.Glyph = Columns?.SortDescending == true ? "" : ""; // ChevronDown / ChevronUp
+            columns.SortChanged -= Columns_SortChanged;
+            columns.SummaryChanged -= Columns_SummaryChanged;
+        }
+    }
+
+    private void Columns_SortChanged(object? sender, EventArgs e) => UpdateHeaders();
+
+    private void Columns_SummaryChanged(object? sender, TableColumn column) => _headerCells[column].Update(Columns!);
+
+    private void UpdateHeaders()
+    {
+        foreach (var cell in _headerCells.Values)
+        {
+            cell.Update(Columns!);
         }
     }
 
@@ -196,4 +203,56 @@ public sealed partial class DataTable : UserControl
 
     /// <summary>Makes rows at least as wide as the visible area, so the selection highlight spans the table.</summary>
     private void HorizontalScroller_SizeChanged(object sender, SizeChangedEventArgs e) => ContentGrid.MinWidth = e.NewSize.Width;
+
+    /// <summary>A column header: optional summary on top, then the title with the sort indicator. Clicking it sorts.</summary>
+    private sealed class HeaderCell
+    {
+        private readonly TableColumn _column;
+        private readonly TextBlock _summary;
+        private readonly FontIcon _sortIcon = new() { FontSize = 10, Visibility = Visibility.Collapsed };
+
+        public HeaderCell(TableColumn column, Action sort)
+        {
+            _column = column;
+            var alignment = column.IsNumeric ? HorizontalAlignment.Right : HorizontalAlignment.Left;
+            _summary = new TextBlock
+            {
+                HorizontalAlignment = alignment,
+                Style = (Style)Application.Current.Resources["BodyStrongTextBlockStyle"],
+            };
+
+            var title = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, HorizontalAlignment = alignment };
+            title.Children.Add(new TextBlock { Text = column.Header, TextTrimming = TextTrimming.CharacterEllipsis });
+            // The sort indicator sits on the inner side of the title.
+            title.Children.Insert(column.IsNumeric ? 0 : 1, _sortIcon);
+
+            var button = new Button
+            {
+                Content = new StackPanel { Children = { _summary, title } },
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalContentAlignment = alignment,
+                VerticalContentAlignment = VerticalAlignment.Bottom,
+                Padding = new Thickness(0, 4, 12, 6),
+                Background = null,
+                BorderThickness = new Thickness(0),
+                CornerRadius = new CornerRadius(0),
+            };
+            ToolTipService.SetToolTip(button, column.Header);
+            AutomationProperties.SetName(button, column.Header);
+            button.Click += (_, _) => sort();
+
+            Root = new Grid { Children = { button, new ColumnGripper(column) } };
+        }
+
+        public Grid Root { get; }
+
+        public void Update(TableColumns columns)
+        {
+            _summary.Text = _column.Summary;
+            _summary.Visibility = _column.Summary is null ? Visibility.Collapsed : Visibility.Visible;
+            _sortIcon.Visibility = _column == columns.SortColumn ? Visibility.Visible : Visibility.Collapsed;
+            _sortIcon.Glyph = columns.SortDescending ? "" : ""; // ChevronDown / ChevronUp
+        }
+    }
 }

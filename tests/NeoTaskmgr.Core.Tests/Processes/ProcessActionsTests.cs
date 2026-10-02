@@ -88,6 +88,57 @@ public sealed class ProcessActionsTests : IDisposable
         Assert.Equal((1ul, ProcessActions.GetAffinity(KeyOf(process))!.Value.SystemMask), ProcessActions.GetAffinity(KeyOf(process)));
     }
 
+    [Fact]
+    public void SetEfficiencyMode_TurnsOnAndOff()
+    {
+        var process = StartWaitingProcess();
+        var key = KeyOf(process);
+
+        ProcessActions.SetEfficiencyMode(key, enabled: true);
+        process.Refresh();
+        Assert.True(ProcessActions.IsEfficiencyModeEnabled(key));
+        Assert.Equal(ProcessPriorityClass.Idle, process.PriorityClass);
+
+        ProcessActions.SetEfficiencyMode(key, enabled: false);
+        process.Refresh();
+        Assert.False(ProcessActions.IsEfficiencyModeEnabled(key));
+        Assert.Equal(ProcessPriorityClass.Normal, process.PriorityClass);
+    }
+
+    [Fact]
+    public void SuspendAndResume()
+    {
+        var process = StartWaitingProcess();
+        using var provider = new ProcessProvider();
+        bool IsSuspended() => provider.Sample(TimeSpan.Zero).Processes.Single(p => p.Key == KeyOf(process)).Counters.IsSuspended;
+
+        ProcessActions.Suspend(KeyOf(process));
+        Assert.True(IsSuspended());
+
+        ProcessActions.Resume(KeyOf(process));
+        Assert.False(IsSuspended());
+    }
+
+    [Fact]
+    public void CreateDumpFile_WritesUniqueFiles()
+    {
+        var process = StartWaitingProcess();
+        var directory = Directory.CreateTempSubdirectory("NeoTaskmgr.Tests").FullName;
+        try
+        {
+            var first = ProcessActions.CreateDumpFile(KeyOf(process), "cmd.exe", directory);
+            var second = ProcessActions.CreateDumpFile(KeyOf(process), "cmd.exe", directory);
+
+            Assert.Equal(Path.Combine(directory, "cmd.DMP"), first);
+            Assert.Equal(Path.Combine(directory, "cmd (2).DMP"), second);
+            Assert.True(new FileInfo(first!).Length > 1024 * 1024);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
     private Process StartWaitingProcess() => Start("cmd.exe", "/k");
 
     private Process Start(string fileName, string arguments)

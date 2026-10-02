@@ -151,7 +151,7 @@
     <value>CPU time</value>
   </data>
   <data name="ColumnMemory" xml:space="preserve">
-    <value>Memory (private working set)</value>
+    <value>Memory</value>
   </data>
   <data name="ColumnWorkingSet" xml:space="preserve">
     <value>Working set</value>
@@ -226,7 +226,7 @@
     <value>Processor affinity</value>
   </data>
   <data name="AffinityMessage" xml:space="preserve">
-    <value>Which processors are allowed to run &quot;{0}&quot;?</value>
+    <value>Which processors are allowed to run "{0}"?</value>
   </data>
   <data name="AffinityProcessor" xml:space="preserve">
     <value>CPU {0}</value>
@@ -235,7 +235,7 @@
     <value>All processors</value>
   </data>
   <data name="EndProcessConfirmTitle" xml:space="preserve">
-    <value>End &quot;{0}&quot;?</value>
+    <value>End "{0}"?</value>
   </data>
   <data name="EndProcessConfirmMessage" xml:space="preserve">
     <value>Unsaved data in this process will be lost. Ending a system process can make Windows unstable.</value>
@@ -244,7 +244,7 @@
     <value>End process</value>
   </data>
   <data name="EndProcessTreeConfirmTitle" xml:space="preserve">
-    <value>End &quot;{0}&quot; and all processes it started?</value>
+    <value>End "{0}" and all processes it started?</value>
   </data>
   <data name="EndProcessTreeConfirmMessage" xml:space="preserve">
     <value>Unsaved data in these processes will be lost. Ending system processes can make Windows unstable.</value>
@@ -253,7 +253,7 @@
     <value>End process tree</value>
   </data>
   <data name="PriorityConfirmTitle" xml:space="preserve">
-    <value>Change the priority of &quot;{0}&quot;?</value>
+    <value>Change the priority of "{0}"?</value>
   </data>
   <data name="PriorityConfirmMessage" xml:space="preserve">
     <value>Changing the priority of some processes can make the system slow or unstable.</value>
@@ -299,5 +299,108 @@
   </data>
   <data name="OpenFileLocationMenuItem.Text" xml:space="preserve">
     <value>Open file location</value>
+  </data>
+  <data name="ColumnMemoryPrivateWorkingSet" xml:space="preserve">
+    <value>Memory (private working set)</value>
+  </data>
+  <data name="ColumnPublisher" xml:space="preserve">
+    <value>Publisher</value>
+  </data>
+  <data name="ColumnProcessName" xml:space="preserve">
+    <value>Process name</value>
+  </data>
+  <data name="StatusNotResponding" xml:space="preserve">
+    <value>Not responding</value>
+  </data>
+  <data name="StatusEfficiencyMode" xml:space="preserve">
+    <value>Efficiency mode</value>
+  </data>
+  <data name="Expand" xml:space="preserve">
+    <value>Expand</value>
+  </data>
+  <data name="Collapse" xml:space="preserve">
+    <value>Collapse</value>
+  </data>
+  <data name="SectionApp" xml:space="preserve">
+    <value>Apps ({0})</value>
+  </data>
+  <data name="SectionBackground" xml:space="preserve">
+    <value>Background processes ({0})</value>
+  </data>
+  <data name="SectionWindows" xml:space="preserve">
+    <value>Windows processes ({0})</value>
+  </data>
+  <data name="EfficiencyConfirmTitle" xml:space="preserve">
+    <value>Turn on efficiency mode for "{0}"?</value>
+  </data>
+  <data name="EfficiencyConfirmMessage" xml:space="preserve">
+    <value>Efficiency mode lowers the priority and power use of the process. Some apps may become slow or unstable.</value>
+  </data>
+  <data name="EfficiencyConfirmButton" xml:space="preserve">
+    <value>Turn on efficiency mode</value>
+  </data>
+  <data name="DumpCreatedTitle" xml:space="preserve">
+    <value>Memory dump file created</value>
+  </data>
+  <data name="DumpCreatedMessage" xml:space="preserve">
+    <value>The file was saved to:
+{0}</value>
+  </data>
+  <data name="OpenFileLocation" xml:space="preserve">
+    <value>Open file location</value>
+  </data>
+  <data name="RunNewTaskTitle" xml:space="preserve">
+    <value>Run new task</value>
+  </data>
+  <data name="RunNewTaskMessage" xml:space="preserve">
+    <value>Enter the name of a program, folder, document or website to open.</value>
+  </data>
+  <data name="RunNewTaskPlaceholder" xml:space="preserve">
+    <value>For example: notepad</value>
+  </data>
+  <data name="RunNewTaskOpen" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="RunNewTaskBrowse" xml:space="preserve">
+    <value>Browse…</value>
+  </data>
+  <data name="RunNewTaskElevated" xml:space="preserve">
+    <value>This task will be created with administrator rights</value>
+  </data>
+  <data name="RunNewTaskAsAdministrator" xml:space="preserve">
+    <value>Create this task with administrator rights</value>
+  </data>
+  <data name="RunNewTaskButton.Label" xml:space="preserve">
+    <value>Run new task</value>
+  </data>
+  <data name="EfficiencyModeButton.Label" xml:space="preserve">
+    <value>Efficiency mode</value>
+  </data>
+  <data name="SwitchToMenuItem.Text" xml:space="preserve">
+    <value>Switch to</value>
+  </data>
+  <data name="RestartMenuItem.Text" xml:space="preserve">
+    <value>Restart</value>
+  </data>
+  <data name="EfficiencyModeMenuItem.Text" xml:space="preserve">
+    <value>Efficiency mode</value>
+  </data>
+  <data name="SuspendMenuItem.Text" xml:space="preserve">
+    <value>Suspend</value>
+  </data>
+  <data name="ResumeMenuItem.Text" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="CreateDumpFileMenuItem.Text" xml:space="preserve">
+    <value>Create memory dump file</value>
+  </data>
+  <data name="GoToDetailsMenuItem.Text" xml:space="preserve">
+    <value>Go to details</value>
+  </data>
+  <data name="SearchOnlineMenuItem.Text" xml:space="preserve">
+    <value>Search online</value>
+  </data>
+  <data name="PropertiesMenuItem.Text" xml:space="preserve">
+    <value>Properties</value>
   </data>
 </root>

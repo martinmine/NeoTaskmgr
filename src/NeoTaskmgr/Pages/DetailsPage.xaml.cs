@@ -10,6 +10,14 @@ public sealed partial class DetailsPage : Page, ISearchablePage
     public DetailsPage()
     {
         InitializeComponent();
+        // Show the selected process, e.g. after "Go to details" on the Processes page.
+        Loaded += (_, _) =>
+        {
+            if (ViewModel.SelectedRow is { } row)
+            {
+                Table.ScrollIntoView(row);
+            }
+        };
     }
 
     /// <summary>Passed as the navigation parameter; set before the page loads its bindings.</summary>

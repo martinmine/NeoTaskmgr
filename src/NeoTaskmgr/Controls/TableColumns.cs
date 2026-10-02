@@ -12,12 +12,24 @@ public sealed class TableColumns : IReadOnlyList<TableColumn>
         _columns = columns;
         foreach (var column in columns)
         {
-            column.PropertyChanged += (_, _) => LayoutChanged?.Invoke(this, EventArgs.Empty);
+            column.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(TableColumn.Summary))
+                {
+                    SummaryChanged?.Invoke(this, column);
+                }
+                else
+                {
+                    LayoutChanged?.Invoke(this, EventArgs.Empty);
+                }
+            };
         }
     }
 
     /// <summary>A column's width or visibility changed.</summary>
     public event EventHandler? LayoutChanged;
+
+    public event EventHandler<TableColumn>? SummaryChanged;
 
     public event EventHandler? SortChanged;
 

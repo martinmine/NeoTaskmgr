@@ -15,5 +15,14 @@ public static class Format
     public static string Duration(TimeSpan duration) =>
         string.Create(CultureInfo.CurrentCulture, $"{(long)duration.TotalHours}:{duration.Minutes:00}:{duration.Seconds:00}");
 
+    /// <summary>A percentage with one decimal, e.g. "12.3%".</summary>
+    public static string Percent(double percent) => string.Create(CultureInfo.CurrentCulture, $"{percent:0.0}%");
+
+    /// <summary>A whole percentage, e.g. "45%".</summary>
+    public static string WholePercent(double percent) => string.Create(CultureInfo.CurrentCulture, $"{Math.Round(percent):0}%");
+
+    /// <summary>Bytes as megabytes with one decimal, e.g. "123.4 MB".</summary>
+    public static string Megabytes(long bytes) => string.Create(CultureInfo.CurrentCulture, $"{bytes / (1024.0 * 1024.0):N1} MB");
+
     public static string Number(long value) => value.ToString("N0", CultureInfo.CurrentCulture);
 }

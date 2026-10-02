@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Win32.SafeHandles;
+using NeoTaskmgr.Core.Interop;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Threading;
@@ -82,9 +83,104 @@ public static class ProcessActions
         }
     }
 
-    /// <summary>Opens File Explorer with the file selected.</summary>
-    public static void OpenFileLocation(string path) =>
-        Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{path}\"") { UseShellExecute = true })?.Dispose();
+    /// <summary>
+    /// Turns Windows 11 efficiency mode on or off, like Task Manager: EcoQoS power throttling plus idle priority
+    /// (turning it off restores normal priority).
+    /// </summary>
+    public static void SetEfficiencyMode(ProcessKey process, bool enabled)
+    {
+        using var handle = Open(process, PROCESS_ACCESS_RIGHTS.PROCESS_SET_INFORMATION);
+        if (handle is null)
+        {
+            return;
+        }
+
+        var state = new PROCESS_POWER_THROTTLING_STATE
+        {
+            Version = PInvoke.PROCESS_POWER_THROTTLING_CURRENT_VERSION,
+            ControlMask = PInvoke.PROCESS_POWER_THROTTLING_EXECUTION_SPEED,
+            StateMask = enabled ? PInvoke.PROCESS_POWER_THROTTLING_EXECUTION_SPEED : 0,
+        };
+        var priority = enabled ? PROCESS_CREATION_FLAGS.IDLE_PRIORITY_CLASS : PROCESS_CREATION_FLAGS.NORMAL_PRIORITY_CLASS;
+        if (!PInvoke.SetProcessInformation(handle, PROCESS_INFORMATION_CLASS.ProcessPowerThrottling, MemoryMarshal.AsBytes(new ReadOnlySpan<PROCESS_POWER_THROTTLING_STATE>(in state))) ||
+            !PInvoke.SetPriorityClass(handle, priority))
+        {
+            ThrowLastError();
+        }
+    }
+
+    /// <summary>Whether efficiency mode (EcoQoS) is on. Returns false if the process cannot be queried.</summary>
+    public static bool IsEfficiencyModeEnabled(ProcessKey process)
+    {
+        try
+        {
+            using var handle = Open(process, PROCESS_ACCESS_RIGHTS.PROCESS_QUERY_LIMITED_INFORMATION);
+            var state = new PROCESS_POWER_THROTTLING_STATE { Version = PInvoke.PROCESS_POWER_THROTTLING_CURRENT_VERSION };
+            return handle is not null &&
+                   PInvoke.GetProcessInformation(handle, PROCESS_INFORMATION_CLASS.ProcessPowerThrottling, MemoryMarshal.AsBytes(new Span<PROCESS_POWER_THROTTLING_STATE>(ref state))) &&
+                   (state.StateMask & PInvoke.PROCESS_POWER_THROTTLING_EXECUTION_SPEED) != 0;
+        }
+        catch (Win32Exception)
+        {
+            return false;
+        }
+    }
+
+    public static void Suspend(ProcessKey process) => SuspendOrResume(process, suspend: true);
+
+    public static void Resume(ProcessKey process) => SuspendOrResume(process, suspend: false);
+
+    /// <summary>Writes a full memory dump to a new file in <paramref name="directory"/> and returns its path, or null if the process exited.</summary>
+    public static string? CreateDumpFile(ProcessKey process, string processName, string directory)
+    {
+        using var handle = Open(process, PROCESS_ACCESS_RIGHTS.PROCESS_QUERY_INFORMATION | PROCESS_ACCESS_RIGHTS.PROCESS_VM_READ);
+        if (handle is null)
+        {
+            return null;
+        }
+
+        var path = GetUniquePath(directory, Path.GetFileNameWithoutExtension(processName), ".DMP");
+        using (var file = File.Create(path))
+        {
+            const uint dumpType = Dbghelp.MiniDumpWithFullMemory | Dbghelp.MiniDumpWithHandleData | Dbghelp.MiniDumpWithThreadInfo |
+                Dbghelp.MiniDumpWithUnloadedModules | Dbghelp.MiniDumpWithFullMemoryInfo;
+            if (Dbghelp.MiniDumpWriteDump(handle, (uint)process.Pid, file.SafeFileHandle, dumpType, 0, 0, 0))
+            {
+                return path;
+            }
+        }
+
+        var error = Marshal.GetLastPInvokeError();
+        File.Delete(path);
+        throw new Win32Exception(error);
+    }
+
+    /// <summary>
+    /// Ends the given Explorer processes and makes sure the shell comes back. Windows normally restarts it by itself;
+    /// it is only started here if that did not happen. Blocks for up to a few seconds.
+    /// </summary>
+    public static void RestartExplorer(IEnumerable<ProcessKey> explorerProcesses)
+    {
+        foreach (var process in explorerProcesses)
+        {
+            End(process);
+        }
+
+        var sessionId = Process.GetCurrentProcess().SessionId;
+        for (var attempt = 0; attempt < 30; attempt++)
+        {
+            Thread.Sleep(100);
+            var explorers = Process.GetProcessesByName("explorer");
+            var isRunning = explorers.Any(p => p.SessionId == sessionId);
+            Array.ForEach(explorers, p => p.Dispose());
+            if (isRunning)
+            {
+                return;
+            }
+        }
+
+        Process.Start(new ProcessStartInfo("explorer.exe") { UseShellExecute = true })?.Dispose();
+    }
 
     /// <summary>Opens the process, or returns null if it no longer exists.</summary>
     private static SafeFileHandle? Open(ProcessKey process, PROCESS_ACCESS_RIGHTS access)
@@ -112,6 +208,32 @@ public static class ProcessActions
         }
 
         return handle;
+    }
+
+    private static void SuspendOrResume(ProcessKey process, bool suspend)
+    {
+        using var handle = Open(process, PROCESS_ACCESS_RIGHTS.PROCESS_SUSPEND_RESUME);
+        if (handle is null)
+        {
+            return;
+        }
+
+        var status = suspend ? Ntdll.NtSuspendProcess(handle) : Ntdll.NtResumeProcess(handle);
+        if (status < 0)
+        {
+            throw new Win32Exception((int)Ntdll.RtlNtStatusToDosError(status));
+        }
+    }
+
+    private static string GetUniquePath(string directory, string name, string extension)
+    {
+        var path = Path.Combine(directory, name + extension);
+        for (var i = 2; File.Exists(path); i++)
+        {
+            path = Path.Combine(directory, $"{name} ({i}){extension}");
+        }
+
+        return path;
     }
 
     private static long ToInt64(System.Runtime.InteropServices.ComTypes.FILETIME time) =>

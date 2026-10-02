@@ -10,6 +10,7 @@ public class TableColumn(string key, string header, double width, bool isNumeric
 
     private double _width = width;
     private bool _isVisible = isVisible;
+    private string? _summary;
 
     public string Key { get; } = key;
     public string Header { get; } = header;
@@ -29,6 +30,13 @@ public class TableColumn(string key, string header, double width, bool isNumeric
     {
         get => _isVisible;
         set => SetProperty(ref _isVisible, value || !CanHide);
+    }
+
+    /// <summary>A total shown above the header, such as overall CPU usage.</summary>
+    public string? Summary
+    {
+        get => _summary;
+        set => SetProperty(ref _summary, value);
     }
 }
 

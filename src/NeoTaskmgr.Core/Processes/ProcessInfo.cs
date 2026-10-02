@@ -35,14 +35,27 @@ public sealed record ProcessDetails
     public string? ImagePath { get; init; }
     public string? UserName { get; init; }
     public string? Description { get; init; }
+    public string? Publisher { get; init; }
     public string? Architecture { get; init; }
     public string? CommandLine { get; init; }
     public bool? IsElevated { get; init; }
 }
 
+/// <summary>The main top-level window of a process, which makes it an app.</summary>
+public sealed record ProcessWindow(nint Handle, bool IsHung);
+
 public sealed record ProcessInfo(ProcessCounters Counters, double CpuPercent, ProcessDetails Details)
 {
     public ProcessKey Key => Counters.Key;
+
+    /// <summary>The process's main window, or null if it has no visible top-level window.</summary>
+    public ProcessWindow? Window { get; init; }
+
+    /// <summary>Windows 11 efficiency mode (EcoQoS power throttling with idle priority).</summary>
+    public bool IsEfficiencyMode { get; init; }
+
+    /// <summary>The name Task Manager shows: the file description, or the image name if there is none.</summary>
+    public string DisplayName => Details.Description ?? Counters.Name;
 }
 
 public sealed record ProcessSnapshot(IReadOnlyList<ProcessInfo> Processes);

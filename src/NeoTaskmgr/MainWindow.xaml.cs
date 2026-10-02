@@ -4,11 +4,13 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Animation;
 using NeoTaskmgr.Core;
+using NeoTaskmgr.Core.Processes;
 using NeoTaskmgr.Core.Settings;
 using NeoTaskmgr.Pages;
 using NeoTaskmgr.Services;
 using NeoTaskmgr.ViewModels;
 using Windows.Graphics;
+using WinRT.Interop;
 
 namespace NeoTaskmgr;
 
@@ -43,7 +45,10 @@ public sealed partial class MainWindow : Window
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
         AppWindow.SetIcon("Assets/AppIcon.ico");
 
+        _dialogs.WindowHandle = WindowNative.GetWindowHandle(this);
+        _dialogs.WindowId = AppWindow.Id;
         NotElevatedInfoBar.IsOpen = !Elevation.IsElevated;
+        viewModel.Processes.GoToDetailsRequested += GoToDetails;
 
         ApplyTheme();
         ApplyAlwaysOnTop();
@@ -81,9 +86,17 @@ public sealed partial class MainWindow : Window
 
     private object? GetPageViewModel(AppPage page) => page switch
     {
+        AppPage.Processes => _viewModel.Processes,
         AppPage.Details => _viewModel.Details,
         _ => null,
     };
+
+    private void GoToDetails(ProcessKey process)
+    {
+        SearchBox.Text = string.Empty;
+        _viewModel.Details.Select(process);
+        NavView.SelectedItem = NavView.MenuItems.OfType<NavigationViewItem>().First(item => (string)item.Tag == nameof(AppPage.Details));
+    }
 
     private void AppTitleBar_PaneToggleRequested(TitleBar sender, object args) => NavView.IsPaneOpen = !NavView.IsPaneOpen;
 

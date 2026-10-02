@@ -1,31 +1,26 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using NeoTaskmgr.Controls;
 using NeoTaskmgr.Core.Collections;
 using NeoTaskmgr.Core.Processes;
 using NeoTaskmgr.Mvvm;
-using NeoTaskmgr.Services;
 
 namespace NeoTaskmgr.ViewModels;
 
 /// <summary>The Details page: a flat, sortable and searchable list of all processes.</summary>
 public sealed class DetailsViewModel : ObservableObject
 {
-    private readonly DialogService _dialogs;
-    private readonly Action _requestRefresh;
+    private readonly ProcessCommandRunner _runner;
     private readonly Dictionary<ProcessKey, ProcessRowViewModel> _rows = [];
     private ProcessSnapshot _snapshot = new([]);
     private string _search = string.Empty;
     private ProcessRowViewModel? _selectedRow;
     private bool _isSyncingRows;
 
-    /// <param name="requestRefresh">Asks for a new snapshot, used after an action changed a process.</param>
-    public DetailsViewModel(DialogService dialogs, Action requestRefresh)
+    public DetailsViewModel(ProcessCommandRunner runner)
     {
-        _dialogs = dialogs;
-        _requestRefresh = requestRefresh;
+        _runner = runner;
 
         // The order must match the cells in the row template of DetailsPage.xaml.
         Columns = new TableColumns(
@@ -37,7 +32,7 @@ public sealed class DetailsViewModel : ObservableObject
             Number("SessionId", 80, r => r.Info.Counters.SessionId, isVisible: false),
             Number("Cpu", 50, r => r.Info.CpuPercent),
             Number("CpuTime", 90, r => r.Info.Counters.CpuTime, isVisible: false),
-            Number("Memory", 150, r => r.Info.Counters.PrivateWorkingSet),
+            Number("MemoryPrivateWorkingSet", 150, r => r.Info.Counters.PrivateWorkingSet),
             Number("WorkingSet", 110, r => r.Info.Counters.WorkingSet, isVisible: false),
             Number("PeakWorkingSet", 130, r => r.Info.Counters.PeakWorkingSet, isVisible: false),
             Number("CommitSize", 110, r => r.Info.Counters.CommitSize, isVisible: false),
@@ -51,14 +46,20 @@ public sealed class DetailsViewModel : ObservableObject
             Text("ImagePath", 300, r => r.ImagePath, isVisible: false),
             Text("CommandLine", 400, r => r.CommandLine, isVisible: false),
         ]);
-        Columns.SortChanged += (_, _) => Refresh();
-        Columns.Sort(Columns[0]);
-
         EndTaskCommand = new RelayCommand(() => _ = EndAsync(tree: false), HasSelection);
         EndProcessTreeCommand = new RelayCommand(() => _ = EndAsync(tree: true), HasSelection);
+        ToggleEfficiencyModeCommand = new RelayCommand(
+            () => _ = _runner.SetEfficiencyModeAsync(SelectedRow!.Name, [SelectedRow.Key], !SelectedRow.Info.IsEfficiencyMode), HasSelection);
         SetPriorityCommand = new RelayCommand<string>(p => _ = SetPriorityAsync(Enum.Parse<ProcessPriorityClass>(p!)), _ => HasSelection());
         SetAffinityCommand = new RelayCommand(() => _ = SetAffinityAsync(), HasSelection);
-        OpenFileLocationCommand = new RelayCommand(OpenFileLocation, () => SelectedRow?.Info.Details.ImagePath is not null);
+        CreateDumpFileCommand = new RelayCommand(() => _ = _runner.CreateDumpFileAsync(SelectedRow!.Key, SelectedRow.Name), HasSelection);
+        OpenFileLocationCommand = new RelayCommand(() => _ = _runner.OpenFileLocationAsync(SelectedRow!.ImagePath), HasImagePath);
+        SearchOnlineCommand = new RelayCommand(() => _ = _runner.SearchOnlineAsync(SelectedRow!.Info), HasSelection);
+        PropertiesCommand = new RelayCommand(() => _ = _runner.ShowPropertiesAsync(SelectedRow!.ImagePath), HasImagePath);
+        RunNewTaskCommand = new RelayCommand(() => _ = _runner.RunNewTaskAsync());
+
+        Columns.SortChanged += (_, _) => Refresh();
+        Columns.Sort(Columns[0]);
     }
 
     public TableColumns Columns { get; }
@@ -74,20 +75,33 @@ public sealed class DetailsViewModel : ObservableObject
             // While rows are reordered the list view may briefly report no selection; keep the selected process.
             if (!_isSyncingRows && SetProperty(ref _selectedRow, value))
             {
-                EndTaskCommand.NotifyCanExecuteChanged();
-                EndProcessTreeCommand.NotifyCanExecuteChanged();
-                SetPriorityCommand.NotifyCanExecuteChanged();
-                SetAffinityCommand.NotifyCanExecuteChanged();
-                OpenFileLocationCommand.NotifyCanExecuteChanged();
+                UpdateCommands();
             }
         }
     }
 
+    public bool IsSelectedEfficiencyMode => SelectedRow?.Info.IsEfficiencyMode == true;
+
     public RelayCommand EndTaskCommand { get; }
     public RelayCommand EndProcessTreeCommand { get; }
+    public RelayCommand ToggleEfficiencyModeCommand { get; }
     public RelayCommand<string> SetPriorityCommand { get; }
     public RelayCommand SetAffinityCommand { get; }
+    public RelayCommand CreateDumpFileCommand { get; }
     public RelayCommand OpenFileLocationCommand { get; }
+    public RelayCommand SearchOnlineCommand { get; }
+    public RelayCommand PropertiesCommand { get; }
+    public RelayCommand RunNewTaskCommand { get; }
+
+    /// <summary>Selects the process (clearing any search that hides it), e.g. for "Go to details".</summary>
+    public void Select(ProcessKey process)
+    {
+        if (_rows.TryGetValue(process, out var row))
+        {
+            ApplySearch(string.Empty);
+            SelectedRow = row;
+        }
+    }
 
     /// <summary>Updates the rows from a new snapshot. Must be called on the UI thread.</summary>
     public void Apply(ProcessSnapshot snapshot)
@@ -151,7 +165,23 @@ public sealed class DetailsViewModel : ObservableObject
         else
         {
             OnPropertyChanged(nameof(SelectedRow)); // Restores the selection in the list view.
+            OnPropertyChanged(nameof(IsSelectedEfficiencyMode));
         }
+    }
+
+    private void UpdateCommands()
+    {
+        foreach (var command in new[]
+                 {
+                     EndTaskCommand, EndProcessTreeCommand, ToggleEfficiencyModeCommand, SetAffinityCommand, CreateDumpFileCommand,
+                     OpenFileLocationCommand, SearchOnlineCommand, PropertiesCommand,
+                 })
+        {
+            command.NotifyCanExecuteChanged();
+        }
+
+        SetPriorityCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(IsSelectedEfficiencyMode));
     }
 
     private bool MatchesSearch(ProcessRowViewModel row) =>
@@ -162,6 +192,8 @@ public sealed class DetailsViewModel : ObservableObject
 
     private bool HasSelection() => SelectedRow is not null;
 
+    private bool HasImagePath() => SelectedRow?.Info.Details.ImagePath is not null;
+
     private async Task EndAsync(bool tree)
     {
         if (SelectedRow is not { } row)
@@ -170,10 +202,10 @@ public sealed class DetailsViewModel : ObservableObject
         }
 
         var prefix = tree ? "EndProcessTree" : "EndProcess";
-        if (await _dialogs.ConfirmAsync(Strings.Format($"{prefix}ConfirmTitle", row.Name), Strings.Get($"{prefix}ConfirmMessage"), Strings.Get($"{prefix}ConfirmButton")))
+        if (await _runner.Dialogs.ConfirmAsync(Strings.Format($"{prefix}ConfirmTitle", row.Name), Strings.Get($"{prefix}ConfirmMessage"), Strings.Get($"{prefix}ConfirmButton")))
         {
             var processes = _snapshot.Processes.Select(p => p.Counters).ToList();
-            await RunAsync(() =>
+            await _runner.RunAsync(() =>
             {
                 if (tree)
                 {
@@ -190,9 +222,9 @@ public sealed class DetailsViewModel : ObservableObject
     private async Task SetPriorityAsync(ProcessPriorityClass priority)
     {
         if (SelectedRow is { } row && row.Priority != priority &&
-            await _dialogs.ConfirmAsync(Strings.Format("PriorityConfirmTitle", row.Name), Strings.Get("PriorityConfirmMessage"), Strings.Get("PriorityConfirmButton")))
+            await _runner.Dialogs.ConfirmAsync(Strings.Format("PriorityConfirmTitle", row.Name), Strings.Get("PriorityConfirmMessage"), Strings.Get("PriorityConfirmButton")))
         {
-            await RunAsync(() => ProcessActions.SetPriority(row.Key, priority));
+            await _runner.RunAsync(() => ProcessActions.SetPriority(row.Key, priority));
         }
     }
 
@@ -204,34 +236,11 @@ public sealed class DetailsViewModel : ObservableObject
         }
 
         (ulong ProcessMask, ulong SystemMask)? affinity = null;
-        await RunAsync(() => affinity = ProcessActions.GetAffinity(row.Key));
-        if (affinity is { } current && await _dialogs.PickAffinityAsync(row.Name, current.ProcessMask, current.SystemMask) is { } mask)
+        await _runner.RunAsync(() => affinity = ProcessActions.GetAffinity(row.Key));
+        if (affinity is { } current && await _runner.Dialogs.PickAffinityAsync(row.Name, current.ProcessMask, current.SystemMask) is { } mask)
         {
-            await RunAsync(() => ProcessActions.SetAffinity(row.Key, mask));
+            await _runner.RunAsync(() => ProcessActions.SetAffinity(row.Key, mask));
         }
-    }
-
-    private void OpenFileLocation()
-    {
-        if (SelectedRow?.Info.Details.ImagePath is { } path)
-        {
-            ProcessActions.OpenFileLocation(path);
-        }
-    }
-
-    /// <summary>Runs a process action, shows any failure, and refreshes the data.</summary>
-    private async Task RunAsync(Action action)
-    {
-        try
-        {
-            action();
-        }
-        catch (Win32Exception e)
-        {
-            await _dialogs.ShowErrorAsync(Strings.Get("ActionFailedTitle"), e.Message);
-        }
-
-        _requestRefresh();
     }
 
     private static TableColumn<ProcessRowViewModel> Text(string key, double width, Func<ProcessRowViewModel, string> value, bool isVisible = true, bool canHide = true) =>

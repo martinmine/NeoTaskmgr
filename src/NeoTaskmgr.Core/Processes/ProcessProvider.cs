@@ -3,6 +3,8 @@ namespace NeoTaskmgr.Core.Processes;
 /// <summary>Produces <see cref="ProcessSnapshot"/>s. Not thread-safe; call <see cref="Sample"/> from one thread at a time.</summary>
 public sealed class ProcessProvider : IDisposable
 {
+    private const int IdleBasePriority = 4;
+
     private readonly SystemProcessReader _reader = new();
     private readonly ProcessDetailsReader _detailsReader = new();
     private readonly CpuUsageTracker _cpuUsage = new(SystemInfo.LogicalProcessorCount);
@@ -13,20 +15,26 @@ public sealed class ProcessProvider : IDisposable
     {
         var counters = _reader.Read();
         var cpuUsage = _cpuUsage.Update(counters, timestamp);
+        var windows = AppWindowReader.Read();
 
         // Details are read once per process; rebuilding the dictionary drops exited processes.
         var details = new Dictionary<ProcessKey, ProcessDetails>(counters.Count);
         var processes = new ProcessInfo[counters.Count];
         for (var i = 0; i < counters.Count; i++)
         {
-            var key = counters[i].Key;
-            if (!_details.TryGetValue(key, out var processDetails))
+            var process = counters[i];
+            if (!_details.TryGetValue(process.Key, out var processDetails))
             {
-                processDetails = _detailsReader.Read(counters[i]);
+                processDetails = _detailsReader.Read(process);
             }
 
-            details[key] = processDetails;
-            processes[i] = new ProcessInfo(counters[i], cpuUsage[i], processDetails);
+            details[process.Key] = processDetails;
+            processes[i] = new ProcessInfo(process, cpuUsage[i], processDetails)
+            {
+                Window = windows.GetValueOrDefault(process.Pid),
+                // Efficiency mode always lowers the priority to idle, so only those processes need to be checked.
+                IsEfficiencyMode = process.BasePriority == IdleBasePriority && ProcessActions.IsEfficiencyModeEnabled(process.Key),
+            };
         }
 
         _details = details;

@@ -14,7 +14,7 @@ namespace NeoTaskmgr.Core.Processes;
 /// <summary>Reads the static <see cref="ProcessDetails"/> of a process. Caches lookups shared between processes.</summary>
 internal sealed unsafe class ProcessDetailsReader
 {
-    private readonly Dictionary<string, string?> _descriptionsByPath = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, (string? Description, string? Publisher)> _versionInfoByPath = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<SecurityIdentifier, string> _userNamesBySid = [];
 
     public ProcessDetails Read(ProcessCounters process)
@@ -33,12 +33,14 @@ internal sealed unsafe class ProcessDetailsReader
 
         var imagePath = GetImagePath(handle);
         var (userName, isElevated) = GetTokenDetails(handle);
+        var (description, publisher) = imagePath is null ? default : GetVersionInfo(imagePath);
         return new ProcessDetails
         {
             ImagePath = imagePath,
             UserName = userName,
             IsElevated = isElevated,
-            Description = imagePath is null ? null : GetDescription(imagePath),
+            Description = description,
+            Publisher = publisher,
             Architecture = GetArchitecture(handle),
             CommandLine = GetCommandLine(handle),
         };
@@ -53,24 +55,27 @@ internal sealed unsafe class ProcessDetailsReader
             : null;
     }
 
-    private string? GetDescription(string imagePath)
+    private (string? Description, string? Publisher) GetVersionInfo(string imagePath)
     {
-        if (!_descriptionsByPath.TryGetValue(imagePath, out var description))
+        if (!_versionInfoByPath.TryGetValue(imagePath, out var info))
         {
             try
             {
-                description = FileVersionInfo.GetVersionInfo(imagePath).FileDescription?.Trim();
+                var versionInfo = FileVersionInfo.GetVersionInfo(imagePath);
+                info = (NullIfEmpty(versionInfo.FileDescription), NullIfEmpty(versionInfo.CompanyName));
             }
             catch (FileNotFoundException)
             {
-                description = null;
+                info = default;
             }
 
-            _descriptionsByPath[imagePath] = description;
+            _versionInfoByPath[imagePath] = info;
         }
 
-        return description;
+        return info;
     }
+
+    private static string? NullIfEmpty(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
     private (string? UserName, bool? IsElevated) GetTokenDetails(SafeFileHandle process)
     {

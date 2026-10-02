@@ -24,4 +24,17 @@ public sealed class FormatTests
     [InlineData(3723, "1:02:03")]
     [InlineData(123 * 3600, "123:00:00")]
     public void Duration(int seconds, string expected) => Assert.Equal(expected, Format.Duration(TimeSpan.FromSeconds(seconds)));
+
+    [Theory]
+    [InlineData(0, "0.0%")]
+    [InlineData(12.345, "12.3%")]
+    [InlineData(100, "100.0%")]
+    public void Percent(double percent, string expected) => Assert.Equal(expected, Format.Percent(percent));
+
+    [Theory]
+    [InlineData(0, "0.0 MB")]
+    [InlineData(1024 * 1024, "1.0 MB")]
+    [InlineData(1536 * 1024, "1.5 MB")]
+    [InlineData(1234L * 1024 * 1024, "1,234.0 MB")]
+    public void Megabytes(long bytes, string expected) => Assert.Equal(expected, Format.Megabytes(bytes));
 }

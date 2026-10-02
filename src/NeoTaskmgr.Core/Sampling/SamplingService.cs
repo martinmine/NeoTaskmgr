@@ -1,11 +1,12 @@
 using System.Diagnostics;
+using NeoTaskmgr.Core.Performance;
 using NeoTaskmgr.Core.Processes;
 using NeoTaskmgr.Core.Settings;
 
 namespace NeoTaskmgr.Core.Sampling;
 
 /// <summary>Everything collected in one sampling tick.</summary>
-public sealed record SystemSnapshot(ProcessSnapshot Processes);
+public sealed record SystemSnapshot(ProcessSnapshot Processes, MemoryStatus Memory);
 
 /// <summary>
 /// Collects a <see cref="SystemSnapshot"/> on a background thread at the configured <see cref="UpdateSpeed"/>.
@@ -62,7 +63,7 @@ public sealed class SamplingService(UpdateSpeed speed) : IDisposable
         {
             try
             {
-                Sampled?.Invoke(new SystemSnapshot(_processes.Sample(clock.Elapsed)));
+                Sampled?.Invoke(new SystemSnapshot(_processes.Sample(clock.Elapsed), MemoryStatus.Read()));
             }
             catch (Exception e)
             {

@@ -16,8 +16,32 @@ OpenProcessToken
 GetTokenInformation
 TOKEN_USER
 TOKEN_ELEVATION
+SetProcessInformation
+PROCESS_POWER_THROTTLING_STATE
+PROCESS_POWER_THROTTLING_CURRENT_VERSION
+PROCESS_POWER_THROTTLING_EXECUTION_SPEED
+
+// Windows
+EnumWindows
+IsWindowVisible
+GetWindow
+GetWindowTextLength
+GetWindowLong
+WINDOW_EX_STYLE
+GetWindowThreadProcessId
+GetClassName
+FindWindowEx
+IsHungAppWindow
+DwmGetWindowAttribute
+IsIconic
+ShowWindow
+SetForegroundWindow
+
+// Shell
+SHObjectProperties
 
 // System
 GetActiveProcessorCount
 ALL_PROCESSOR_GROUPS
+GlobalMemoryStatusEx
 WIN32_ERROR

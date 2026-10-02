@@ -8,12 +8,16 @@ public sealed class MainViewModel(
     SettingsViewModel settings,
     ProcessesViewModel processes,
     PerformanceViewModel performance,
+    StartupAppsViewModel startupApps,
     DetailsViewModel details,
     ServicesViewModel services)
 {
     public SettingsViewModel Settings { get; } = settings;
     public ProcessesViewModel Processes { get; } = processes;
     public PerformanceViewModel Performance { get; } = performance;
+
+    /// <summary>Not updated by snapshots; the page reloads it when shown.</summary>
+    public StartupAppsViewModel StartupApps { get; } = startupApps;
     public DetailsViewModel Details { get; } = details;
     public ServicesViewModel Services { get; } = services;
 

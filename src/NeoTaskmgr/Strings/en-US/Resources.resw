@@ -679,4 +679,34 @@
   <data name="GoToServicesMenuItem.Text" xml:space="preserve">
     <value>Go to service(s)</value>
   </data>
+  <data name="ColumnStartupImpact" xml:space="preserve">
+    <value>Startup impact</value>
+  </data>
+  <data name="ColumnStartupType" xml:space="preserve">
+    <value>Startup type</value>
+  </data>
+  <data name="ColumnLocation" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="StartupImpactNotMeasured" xml:space="preserve">
+    <value>Not measured</value>
+  </data>
+  <data name="StartupTypeRegistry" xml:space="preserve">
+    <value>Registry</value>
+  </data>
+  <data name="StartupTypeFolder" xml:space="preserve">
+    <value>Startup folder</value>
+  </data>
+  <data name="EnableButton.Label" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="DisableButton.Label" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="EnableMenuItem.Text" xml:space="preserve">
+    <value>Enable</value>
+  </data>
+  <data name="DisableMenuItem.Text" xml:space="preserve">
+    <value>Disable</value>
+  </data>
 </root>

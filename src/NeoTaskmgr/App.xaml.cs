@@ -2,6 +2,7 @@ using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using NeoTaskmgr.Core.Sampling;
 using NeoTaskmgr.Core.Settings;
+using NeoTaskmgr.Core.Startup;
 using NeoTaskmgr.Services;
 using NeoTaskmgr.ViewModels;
 using NeoTaskmgr.ViewModels.Performance;
@@ -25,7 +26,12 @@ public partial class App : Application
         var dialogs = new DialogService();
         var runner = new ProcessCommandRunner(dialogs, sampler.RefreshNow);
         var viewModel = new MainViewModel(
-            settings, new ProcessesViewModel(runner), new PerformanceViewModel(), new DetailsViewModel(runner), new ServicesViewModel(runner));
+            settings,
+            new ProcessesViewModel(runner),
+            new PerformanceViewModel(),
+            new StartupAppsViewModel(StartupProvider.CreateDefault(), runner),
+            new DetailsViewModel(runner),
+            new ServicesViewModel(runner));
 
         var dispatcher = DispatcherQueue.GetForCurrentThread();
         sampler.Sampled += snapshot => dispatcher.TryEnqueue(() => viewModel.Apply(snapshot));

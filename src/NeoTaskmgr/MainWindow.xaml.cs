@@ -90,6 +90,7 @@ public sealed partial class MainWindow : Window
     {
         AppPage.Processes => _viewModel.Processes,
         AppPage.Performance => _viewModel.Performance,
+        AppPage.StartupApps => _viewModel.StartupApps,
         AppPage.Details => _viewModel.Details,
         AppPage.Services => _viewModel.Services,
         _ => null,

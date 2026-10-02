@@ -1,11 +1,12 @@
 using System.ComponentModel;
+using System.Security;
 using NeoTaskmgr.Core.Processes;
 using NeoTaskmgr.Core.Shell;
 using NeoTaskmgr.Services;
 
 namespace NeoTaskmgr.ViewModels;
 
-/// <summary>Runs process and shell actions for the Processes and Details pages: confirms, reports failures, and refreshes data.</summary>
+/// <summary>Runs actions for the pages: confirms, reports failures, and refreshes data.</summary>
 public sealed class ProcessCommandRunner(DialogService dialogs, Action requestRefresh)
 {
     private const int ErrorCancelled = 1223; // The user declined the UAC prompt.
@@ -35,6 +36,11 @@ public sealed class ProcessCommandRunner(DialogService dialogs, Action requestRe
         catch (Win32Exception)
         {
             // Cancelled by the user.
+        }
+        catch (Exception e) when (e is UnauthorizedAccessException or SecurityException or IOException)
+        {
+            // E.g. changing settings for all users without administrator rights.
+            await dialogs.ShowErrorAsync(Strings.Get("ActionFailedTitle"), e.Message);
         }
 
         requestRefresh();

@@ -11,11 +11,23 @@ namespace NeoTaskmgr.Controls;
 /// </summary>
 public sealed partial class TableRowPanel : Panel
 {
+    // Implicit styles don't cross template boundaries, so cells inside list items only see styles declared within
+    // the row template. This panel is the root of every row template, so it carries the cell text style.
+    private static readonly Style CellTextStyle = new(typeof(TextBlock))
+    {
+        Setters =
+        {
+            new Setter(VerticalAlignmentProperty, VerticalAlignment.Center),
+            new Setter(TextBlock.TextTrimmingProperty, TextTrimming.CharacterEllipsis),
+        },
+    };
+
     private TableColumns? _columns;
     private bool _isLoaded;
 
     public TableRowPanel()
     {
+        Resources[typeof(TextBlock)] = CellTextStyle;
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
     }

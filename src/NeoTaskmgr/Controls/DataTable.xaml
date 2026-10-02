@@ -4,14 +4,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:NeoTaskmgr.Controls">
-    <UserControl.Resources>
-        <!-- Applies to the cells of all rows. -->
-        <Style TargetType="TextBlock">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
-        </Style>
-    </UserControl.Resources>
-
     <!-- Scrolls horizontally when the columns are wider than the table; the list scrolls vertically. -->
     <ScrollViewer
         x:Name="HorizontalScroller"

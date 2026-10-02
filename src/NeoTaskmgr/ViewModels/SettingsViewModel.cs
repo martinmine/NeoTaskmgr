@@ -51,6 +51,10 @@ public sealed class SettingsViewModel(SettingsStore store) : ObservableObject
     public string Version { get; } = typeof(SettingsViewModel).Assembly
         .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? string.Empty;
 
+    /// <summary>Makes App history start now, like Task Manager's "Delete usage history" (Windows keeps the data).</summary>
+    public void DeleteAppHistory() =>
+        Update(_settings with { AppHistoryDeletedUtc = DateTime.UtcNow }, nameof(AppSettings.AppHistoryDeletedUtc));
+
     /// <summary>Saves the window placement and table layouts, when the app closes.</summary>
     public void SaveSession(WindowPlacement? window, IReadOnlyDictionary<string, TableLayout> tables)
     {

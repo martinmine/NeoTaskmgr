@@ -24,6 +24,9 @@ public static class Format
     /// <summary>Bytes as megabytes with one decimal, e.g. "123.4 MB".</summary>
     public static string Megabytes(long bytes) => string.Create(CultureInfo.CurrentCulture, $"{bytes / (1024.0 * 1024.0):N1} MB");
 
+    /// <summary>Total usage in megabytes like Task Manager's App history: "0 MB" for none, else e.g. "0.2 MB".</summary>
+    public static string UsageMegabytes(long bytes) => bytes == 0 ? "0 MB" : Megabytes(bytes);
+
     /// <summary>A size with a suitable unit and one decimal for GB and up, e.g. "512 KB", "12 MB", "15.8 GB".</summary>
     public static string Size(long bytes)
     {

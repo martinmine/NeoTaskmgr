@@ -49,6 +49,7 @@
                     SelectedIndex="{x:Bind ViewModel.StartPageIndex, Mode=TwoWay}">
                     <ComboBoxItem x:Uid="StartPageProcesses" />
                     <ComboBoxItem x:Uid="StartPagePerformance" />
+                    <ComboBoxItem x:Uid="StartPageAppHistory" />
                     <ComboBoxItem x:Uid="StartPageStartupApps" />
                     <ComboBoxItem x:Uid="StartPageDetails" />
                     <ComboBoxItem x:Uid="StartPageServices" />

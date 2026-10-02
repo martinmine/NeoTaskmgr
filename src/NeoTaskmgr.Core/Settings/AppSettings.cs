@@ -5,6 +5,7 @@ public enum AppPage
 {
     Processes,
     Performance,
+    AppHistory,
     StartupApps,
     Details,
     Services,
@@ -34,6 +35,7 @@ public enum AppTheme
 /// <param name="MinimizeOnUse">Minimize this window after switching to another app from it.</param>
 /// <param name="Window">The window's last position and size, or null to use the default.</param>
 /// <param name="Tables">The column layout of each table, by table name.</param>
+/// <param name="AppHistoryDeletedUtc">When the user last chose "Delete usage history"; App history starts there.</param>
 public sealed record AppSettings(
     AppPage StartPage = AppPage.Processes,
     UpdateSpeed UpdateSpeed = UpdateSpeed.Normal,
@@ -41,7 +43,8 @@ public sealed record AppSettings(
     AppTheme Theme = AppTheme.System,
     bool MinimizeOnUse = false,
     WindowPlacement? Window = null,
-    IReadOnlyDictionary<string, TableLayout>? Tables = null);
+    IReadOnlyDictionary<string, TableLayout>? Tables = null,
+    DateTime? AppHistoryDeletedUtc = null);
 
 /// <summary>A window's restored (not maximized) bounds in physical pixels, and whether it was maximized.</summary>
 public sealed record WindowPlacement(int X, int Y, int Width, int Height, bool IsMaximized);

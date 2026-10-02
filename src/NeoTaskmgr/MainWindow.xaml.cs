@@ -25,6 +25,7 @@ public sealed partial class MainWindow : Window
     {
         [AppPage.Processes] = typeof(ProcessesPage),
         [AppPage.Performance] = typeof(PerformancePage),
+        [AppPage.AppHistory] = typeof(AppHistoryPage),
         [AppPage.StartupApps] = typeof(StartupAppsPage),
         [AppPage.Details] = typeof(DetailsPage),
         [AppPage.Services] = typeof(ServicesPage),
@@ -146,7 +147,7 @@ public sealed partial class MainWindow : Window
         args.Handled = true;
     }
 
-    /// <summary>Ctrl+1 to Ctrl+5 open the pages in navigation order.</summary>
+    /// <summary>Ctrl+1 to Ctrl+6 open the pages in navigation order.</summary>
     private void GoToPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         Navigate((AppPage)(sender.Key - VirtualKey.Number1));
@@ -178,6 +179,7 @@ public sealed partial class MainWindow : Window
     {
         AppPage.Processes => _viewModel.Processes,
         AppPage.Performance => _viewModel.Performance,
+        AppPage.AppHistory => _viewModel.AppHistory,
         AppPage.StartupApps => _viewModel.StartupApps,
         AppPage.Details => _viewModel.Details,
         AppPage.Services => _viewModel.Services,

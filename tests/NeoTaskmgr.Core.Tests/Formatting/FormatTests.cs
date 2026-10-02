@@ -39,6 +39,11 @@ public sealed class FormatTests
     public void Megabytes(long bytes, string expected) => Assert.Equal(expected, Format.Megabytes(bytes));
 
     [Theory]
+    [InlineData(0, "0 MB")]
+    [InlineData(200 * 1024, "0.2 MB")]
+    public void UsageMegabytes(long bytes, string expected) => Assert.Equal(expected, Format.UsageMegabytes(bytes));
+
+    [Theory]
     [InlineData(500, "500 bytes")]
     [InlineData(512 * 1024, "512 KB")]
     [InlineData(12L * 1024 * 1024, "12 MB")]

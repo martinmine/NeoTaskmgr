@@ -8,7 +8,7 @@ A modern C# / WinUI 3 re-implementation of Windows Task Manager.
 |---|---|---|
 | Processes | Yes | Grouped view (Apps / Background / Windows processes), heat-map columns, end task, efficiency mode |
 | Performance | Yes | CPU, Memory, Disk(s), Ethernet/Wi‑Fi, GPU(s) with live graphs |
-| App history | **No** | Out of scope |
+| App history | Yes | CPU time, network and notifications per app over the last 30 days, from SRUM |
 | Startup apps | Yes | Registry Run keys + Startup folders, enable/disable |
 | Users | **No** | Out of scope |
 | Details | Yes | Flat process list, column picker, priority/affinity, dump file |
@@ -112,6 +112,13 @@ Actions: End task (`WM_CLOSE` for apps, then `Process.Kill`), End process tree (
 
 UI: left list of mini-graphs (like Task Manager) + detail panel with a large graph and stat grid. CPU view can switch between "Overall utilization" and "Logical processors" via the graph's right-click "Change graph to" menu (`ItemsRepeater` + `UniformGridLayout` of small graphs).
 
+### App history
+- Source: the System Resource Usage Monitor (SRUM), queried with `SruQueryStats` from `srumapi.dll` – the undocumented API Task Manager uses (via its real-time variant). The signatures and record layout were worked out from `srumapi.dll` and `taskmgr.exe` and are declared in `Interop/Srumapi.cs`.
+- Providers: application resource usage (foreground + background cycle time → CPU time at the base clock speed), network usage (bytes sent/received), push notifications (payload size).
+- Scope: all users when elevated, filtered to the current user and the service accounts like Task Manager; otherwise the current user only.
+- Rows: one per program (version and hash folders in the path ignored, so self-updating apps stay one row), packaged app (by package family; display name and logo from `PackageManager`) or service.
+- "Delete usage history" stores a start time in the settings instead of deleting Windows' data.
+
 ### Startup apps
 - Registry: `HKCU`/`HKLM` `Software\Microsoft\Windows\CurrentVersion\Run` (+ `WOW6432Node`), via `Microsoft.Win32.Registry` (BCL).
 - Folders: `Environment.SpecialFolder.Startup` / `CommonStartup`; resolve `.lnk` targets via `IShellLinkW` COM interop.
@@ -125,7 +132,7 @@ UI: left list of mini-graphs (like Task Manager) + detail panel with a large gra
 ## 6. UI design
 
 - **Shell**: `MainWindow` with Mica backdrop, custom title bar (`ExtendsContentIntoTitleBar`) containing app icon, title and a global **search box** (filters the current page) – matches Windows 11 Task Manager.
-- **Navigation**: `NavigationView` (left, compact) → Processes, Performance, Startup apps, Details, Services; Settings in footer. Each page has a `CommandBar` with context actions (Run new task, End task, Efficiency mode, …).
+- **Navigation**: `NavigationView` (left, compact) → Processes, Performance, App history, Startup apps, Details, Services; Settings in footer. Each page has a `CommandBar` with context actions (Run new task, End task, Efficiency mode, …).
 - **Tables**: WinUI has no built-in DataGrid. Build one small reusable `DataTable` control: a header row (sortable, resizable `ColumnDefinition`s, right-click to pick columns) above a virtualized `ListView` whose item template uses the same column widths. Used by Processes, Details, Services and Startup.
   - Processes uses the same control over a **flattened tree** (group headers + expandable app rows with child processes) – far faster than `TreeView` for hundreds of rows.
   - Heat-map cell background (faint → strong shade of the user's accent color) via a value converter on usage %.

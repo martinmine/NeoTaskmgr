@@ -1,7 +1,7 @@
 # NeoTaskmgr
 
-A modern C# / WinUI 3 re-implementation of Windows Task Manager: Processes, Performance, Startup apps, Details and
-Services. See [docs/PLAN.md](docs/PLAN.md) for scope, architecture and decisions.
+A modern C# / WinUI 3 re-implementation of Windows Task Manager: Processes, Performance, App history, Startup apps,
+Details and Services. See [docs/PLAN.md](docs/PLAN.md) for scope, architecture and decisions.
 
 ## Requirements
 
@@ -36,7 +36,7 @@ Windows App SDK; start `NeoTaskmgr.exe`.
 | Keys | Action |
 |---|---|
 | Ctrl+F | Search |
-| Ctrl+1 … Ctrl+5 | Processes, Performance, Startup apps, Details, Services |
+| Ctrl+1 … Ctrl+6 | Processes, Performance, App history, Startup apps, Details, Services |
 | F5 | Refresh now (also when updates are paused) |
 | Delete | End task |
 | Right / Left | Expand / collapse an app on the Processes page |
@@ -50,6 +50,7 @@ Without them, NeoTaskmgr shows a banner and these features are unavailable or li
 - The per-process Network column (it uses kernel event tracing)
 - Starting and stopping services
 - Enabling or disabling startup apps for all users
+- App history of the system accounts (without it, only the current user's usage is shown)
 
 ## Known limitations
 
@@ -57,6 +58,9 @@ Without them, NeoTaskmgr shows a banner and these features are unavailable or li
 - Apps whose only windows are on another virtual desktop are listed as background processes.
 - Store app startup tasks are not listed on the Startup apps page, and startup impact is not measured.
 - CPU usage covers the first 64 logical processors (one processor group).
+- App history reads the usage data Windows records (SRUM) through an undocumented API, the one Task Manager uses.
+  CPU time is converted from processor cycles at the CPU's base speed. "Delete usage history" makes the list start at
+  that moment; the data Windows keeps is not deleted.
 - Settings are stored in `%LocalAppData%\NeoTaskmgr\settings.json`.
 
 ## Repository layout

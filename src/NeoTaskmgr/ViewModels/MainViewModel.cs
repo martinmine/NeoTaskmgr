@@ -13,6 +13,7 @@ public sealed class MainViewModel
         SettingsViewModel settings,
         ProcessesViewModel processes,
         PerformanceViewModel performance,
+        AppHistoryViewModel appHistory,
         StartupAppsViewModel startupApps,
         DetailsViewModel details,
         ServicesViewModel services,
@@ -21,6 +22,7 @@ public sealed class MainViewModel
         Settings = settings;
         Processes = processes;
         Performance = performance;
+        AppHistory = appHistory;
         StartupApps = startupApps;
         Details = details;
         Services = services;
@@ -40,6 +42,9 @@ public sealed class MainViewModel
     public PerformanceViewModel Performance { get; }
 
     /// <summary>Not updated by snapshots; the page reloads it when shown.</summary>
+    public AppHistoryViewModel AppHistory { get; }
+
+    /// <summary>Not updated by snapshots; the page reloads it when shown.</summary>
     public StartupAppsViewModel StartupApps { get; }
 
     public DetailsViewModel Details { get; }
@@ -48,7 +53,7 @@ public sealed class MainViewModel
     /// <summary>Samples now, also when updates are paused.</summary>
     public RelayCommand RefreshCommand { get; }
 
-    private IEnumerable<TableColumns> Tables => [Processes.Columns, StartupApps.Columns, Details.Columns, Services.Columns];
+    private IEnumerable<TableColumns> Tables => [Processes.Columns, AppHistory.Columns, StartupApps.Columns, Details.Columns, Services.Columns];
 
     /// <summary>Updates all pages from a new snapshot. Must be called on the UI thread.</summary>
     public void Apply(SystemSnapshot snapshot)

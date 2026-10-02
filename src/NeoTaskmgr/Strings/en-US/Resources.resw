@@ -36,6 +36,9 @@
   <data name="NavPerformance.Content" xml:space="preserve">
     <value>Performance</value>
   </data>
+  <data name="NavAppHistory.Content" xml:space="preserve">
+    <value>App history</value>
+  </data>
   <data name="NavStartupApps.Content" xml:space="preserve">
     <value>Startup apps</value>
   </data>
@@ -50,6 +53,9 @@
   </data>
   <data name="PerformancePageTitle.Text" xml:space="preserve">
     <value>Performance</value>
+  </data>
+  <data name="AppHistoryPageTitle.Text" xml:space="preserve">
+    <value>App history</value>
   </data>
   <data name="StartupAppsPageTitle.Text" xml:space="preserve">
     <value>Startup apps</value>
@@ -77,6 +83,9 @@
   </data>
   <data name="StartPagePerformance.Content" xml:space="preserve">
     <value>Performance</value>
+  </data>
+  <data name="StartPageAppHistory.Content" xml:space="preserve">
+    <value>App history</value>
   </data>
   <data name="StartPageStartupApps.Content" xml:space="preserve">
     <value>Startup apps</value>
@@ -736,9 +745,33 @@
   <data name="SettingsShortcutsHeader.Text" xml:space="preserve">
     <value>Keyboard shortcuts</value>
   </data>
+  <data name="ColumnNotifications" xml:space="preserve">
+    <value>Notifications</value>
+  </data>
+  <data name="ColumnDownloads" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
+  <data name="ColumnUploads" xml:space="preserve">
+    <value>Uploads</value>
+  </data>
+  <data name="AppHistorySummary" xml:space="preserve">
+    <value>Resource usage since {0} for current user and system accounts.</value>
+    <comment>{0} is a date.</comment>
+  </data>
+  <data name="AppHistorySummaryCurrentUser" xml:space="preserve">
+    <value>Resource usage since {0} for the current user. Restart NeoTaskmgr as administrator to include system accounts.</value>
+    <comment>{0} is a date.</comment>
+  </data>
+  <data name="AppHistoryUnavailable" xml:space="preserve">
+    <value>App history isn't available: {0}</value>
+    <comment>{0} is the error message from Windows.</comment>
+  </data>
+  <data name="DeleteUsageHistoryButton.Content" xml:space="preserve">
+    <value>Delete usage history</value>
+  </data>
   <data name="SettingsShortcuts.Text" xml:space="preserve">
     <value>Ctrl+F: Search
-Ctrl+1 to Ctrl+5: Processes, Performance, Startup apps, Details, Services
+Ctrl+1 to Ctrl+6: Processes, Performance, App history, Startup apps, Details, Services
 F5: Refresh now (also when paused)
 Delete: End task
 Right / Left: Expand / collapse an app on the Processes page

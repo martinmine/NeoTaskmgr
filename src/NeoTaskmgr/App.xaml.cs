@@ -1,5 +1,6 @@
 using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
+using NeoTaskmgr.Core.AppHistory;
 using NeoTaskmgr.Core.Sampling;
 using NeoTaskmgr.Core.Settings;
 using NeoTaskmgr.Core.Startup;
@@ -29,6 +30,7 @@ public partial class App : Application
             settings,
             new ProcessesViewModel(runner),
             new PerformanceViewModel(runner),
+            new AppHistoryViewModel(new AppHistoryProvider(), settings, runner),
             new StartupAppsViewModel(StartupProvider.CreateDefault(), runner),
             new DetailsViewModel(runner),
             new ServicesViewModel(runner),

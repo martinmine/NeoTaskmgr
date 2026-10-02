@@ -5,7 +5,10 @@ using Windows.Storage.FileProperties;
 
 namespace NeoTaskmgr;
 
-/// <summary>Icons of executables, loaded once per path via the shell's thumbnails. For use from x:Bind on the UI thread.</summary>
+/// <summary>
+/// Icons of executables, loaded once per path via the shell's thumbnails, and logos of packaged apps. For use from
+/// x:Bind on the UI thread.
+/// </summary>
 public static class IconCache
 {
     private const uint IconSize = 32; // Rendered at 16 px; 32 keeps it sharp at 200% scaling.
@@ -27,6 +30,41 @@ public static class IconCache
         }
 
         return icon;
+    }
+
+    /// <summary>The logo of a packaged app, or the icon of a program; null when neither is known.</summary>
+    public static ImageSource? GetApp(string? path, string? packageFamilyName)
+    {
+        if (packageFamilyName is null)
+        {
+            return Get(path);
+        }
+
+        var key = "package:" + packageFamilyName;
+        if (!Icons.TryGetValue(key, out var icon))
+        {
+            icon = new BitmapImage { DecodePixelWidth = (int)IconSize };
+            Icons[key] = icon;
+            _ = LoadPackageLogoAsync(icon, packageFamilyName);
+        }
+
+        return icon;
+    }
+
+    private static async Task LoadPackageLogoAsync(BitmapImage icon, string familyName)
+    {
+        try
+        {
+            if (await Task.Run(() => AppPackages.GetEntry(familyName)) is { } entry)
+            {
+                using var stream = await entry.DisplayInfo.GetLogo(new Windows.Foundation.Size(IconSize, IconSize)).OpenReadAsync();
+                await icon.SetSourceAsync(stream);
+            }
+        }
+        catch (Exception)
+        {
+            // As for files: a missing logo is cosmetic.
+        }
     }
 
     private static async Task LoadAsync(BitmapImage icon, string path)

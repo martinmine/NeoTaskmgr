@@ -106,7 +106,7 @@ public static class IconCache
         try
         {
             var file = await StorageFile.GetFileFromPathAsync(path);
-            using var thumbnail = await file.GetThumbnailAsync(ThumbnailMode.SingleItem, IconSize, ThumbnailOptions.ResizeThumbnail);
+            using var thumbnail = await GetThumbnailAsync(file);
             if (thumbnail is not null)
             {
                 await icon.SetSourceAsync(thumbnail);
@@ -115,6 +115,25 @@ public static class IconCache
         catch (Exception)
         {
             // An icon is cosmetic: files that cannot be read (access denied, deleted) simply show no icon.
+        }
+    }
+
+    private static async Task<StorageItemThumbnail?> GetThumbnailAsync(StorageFile file)
+    {
+        // While the shell is still extracting an icon that is not in its thumbnail cache yet, a request fails with E_PENDING.
+        // This happens when many icons are requested at once, as when the Processes page first loads; asking again shortly
+        // after succeeds.
+        const int EPending = unchecked((int)0x8000000A);
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                return await file.GetThumbnailAsync(ThumbnailMode.SingleItem, IconSize, ThumbnailOptions.ResizeThumbnail);
+            }
+            catch (Exception e) when (e.HResult == EPending && attempt < 5)
+            {
+                await Task.Delay(200 * attempt);
+            }
         }
     }
 }

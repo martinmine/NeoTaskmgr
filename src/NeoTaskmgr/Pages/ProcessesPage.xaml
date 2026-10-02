@@ -54,7 +54,17 @@
                                 Source="{x:Bind local:IconCache.Get(ImagePath), Mode=OneWay}" />
                             <TextBlock Grid.Column="2" Text="{x:Bind Name, Mode=OneWay}" />
                         </Grid>
-                        <TextBlock Text="{x:Bind StatusText, Mode=OneWay}" />
+                        <Grid>
+                            <TextBlock Text="{x:Bind StatusText, Mode=OneWay}" />
+                            <FontIcon
+                                HorizontalAlignment="Left"
+                                AutomationProperties.Name="{x:Bind EfficiencyModeText}"
+                                FontSize="14"
+                                Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                Glyph="&#xEC0A;"
+                                ToolTipService.ToolTip="{x:Bind EfficiencyModeText}"
+                                Visibility="{x:Bind ShowsEfficiencyLeaf, Mode=OneWay}" />
+                        </Grid>
                         <TextBlock Text="{x:Bind Publisher, Mode=OneWay}" />
                         <TextBlock HorizontalAlignment="Right" Text="{x:Bind PidText, Mode=OneWay}" />
                         <TextBlock Text="{x:Bind ProcessName, Mode=OneWay}" />

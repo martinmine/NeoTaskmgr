@@ -68,8 +68,12 @@ public sealed class ProcessGroupRowViewModel : ObservableObject
     public string StatusText =>
         Window?.IsHung == true ? Strings.Get("StatusNotResponding") :
         IsSuspended ? Strings.Get("StatusSuspended") :
-        IsEfficiencyMode ? Strings.Get("StatusEfficiencyMode") :
         string.Empty;
+
+    // Like Task Manager, efficiency mode is shown as a leaf rather than text, unless a more important status applies.
+    public bool ShowsEfficiencyLeaf => IsEfficiencyMode && StatusText.Length == 0;
+    public string EfficiencyModeText => Strings.Get("StatusEfficiencyMode");
+    public string StatusSortText => ShowsEfficiencyLeaf ? EfficiencyModeText : StatusText;
 
     public double CpuPercent => Processes.Sum(p => p.CpuPercent);
     public string CpuText => Format.Percent(CpuPercent);

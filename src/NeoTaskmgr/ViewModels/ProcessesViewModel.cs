@@ -45,7 +45,7 @@ public sealed class ProcessesViewModel : ObservableObject
         Columns = new TableColumns("Processes",
         [
             Text("Name", 280, r => r.Name, canHide: false),
-            Text("Status", 120, r => r.StatusText),
+            Text("Status", 120, r => r.StatusSortText),
             Text("Publisher", 160, r => r.Publisher, isVisible: false),
             new TableColumn<ProcessGroupRowViewModel>("Pid", Strings.Get("ColumnPid"), 70, (a, b) => a.Root.Counters.Pid.CompareTo(b.Root.Counters.Pid),
                 isNumeric: true, isVisible: false),

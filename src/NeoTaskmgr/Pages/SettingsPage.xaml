@@ -114,6 +114,42 @@
                     VerticalAlignment="Center"
                     IsOn="{x:Bind ViewModel.AlwaysOnTop, Mode=TwoWay}" />
             </Grid>
+
+            <Grid Style="{StaticResource SettingsCardStyle}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Uid="SettingsMinimizeOnUseTitle" />
+                    <TextBlock x:Uid="SettingsMinimizeOnUseDescription" Style="{StaticResource SettingsCardDescriptionStyle}" />
+                </StackPanel>
+                <ToggleSwitch
+                    x:Uid="SettingsMinimizeOnUseToggle"
+                    Grid.Column="1"
+                    MinWidth="0"
+                    VerticalAlignment="Center"
+                    IsOn="{x:Bind ViewModel.MinimizeOnUse, Mode=TwoWay}" />
+            </Grid>
+
+            <TextBlock
+                x:Uid="SettingsAboutHeader"
+                Margin="0,24,0,4"
+                Style="{StaticResource BodyStrongTextBlockStyle}" />
+            <Grid Style="{StaticResource SettingsCardStyle}">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="NeoTaskmgr" />
+                    <TextBlock Style="{StaticResource SettingsCardDescriptionStyle}" Text="{x:Bind ViewModel.Version}" />
+                </StackPanel>
+            </Grid>
+
+            <TextBlock
+                x:Uid="SettingsShortcutsHeader"
+                Margin="0,24,0,4"
+                Style="{StaticResource BodyStrongTextBlockStyle}" />
+            <Grid Style="{StaticResource SettingsCardStyle}">
+                <TextBlock x:Uid="SettingsShortcuts" TextWrapping="Wrap" />
+            </Grid>
         </StackPanel>
     </ScrollViewer>
 </Page>

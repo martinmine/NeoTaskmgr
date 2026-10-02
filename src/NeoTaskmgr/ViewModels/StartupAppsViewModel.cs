@@ -27,7 +27,7 @@ public sealed class StartupAppsViewModel : ObservableObject
         _runner = runner;
 
         // The order must match the cells in the row template of StartupAppsPage.xaml.
-        Columns = new TableColumns(
+        Columns = new TableColumns("StartupApps",
         [
             Text("Name", 280, r => r.Name, canHide: false),
             Text("Publisher", 200, r => r.Publisher),

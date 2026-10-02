@@ -31,7 +31,8 @@ public partial class App : Application
             new PerformanceViewModel(),
             new StartupAppsViewModel(StartupProvider.CreateDefault(), runner),
             new DetailsViewModel(runner),
-            new ServicesViewModel(runner));
+            new ServicesViewModel(runner),
+            sampler.RefreshNow);
 
         var dispatcher = DispatcherQueue.GetForCurrentThread();
         sampler.Sampled += snapshot => dispatcher.TryEnqueue(() => viewModel.Apply(snapshot));

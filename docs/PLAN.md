@@ -144,7 +144,7 @@ Each milestone ends with a buildable, runnable app.
 4. ✅ **Performance page** – `PerformanceGraph`, CPU (overall + logical processors), Memory (incl. composition bar), Disk, Network, GPU; per-process Disk, GPU and Network (ETW/TraceEvent) columns added to Processes/Details.
 5. ✅ **Services page** – list, actions, go to details.
 6. ✅ **Startup apps page** – registry + folders, enable/disable, open file location.
-7. **Settings & polish** – default start page, update speed, always on top, hide when minimized, theme; keyboard shortcuts; accessibility pass (AutomationProperties, narrator); performance tuning (target < 1% CPU at Normal speed); release build & publish profile.
+7. ✅ **Settings & polish** – default start page, update speed, always on top, theme, minimize on use (instead of "hide when minimized", which needs a notification area icon that WinUI does not provide); window placement and table layouts remembered; keyboard shortcuts; accessibility pass (AutomationProperties, narrator); performance tuning (target < 1% CPU at Normal speed); release build & publish profile.
 
 ## 8. Decisions
 

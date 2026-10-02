@@ -9,6 +9,7 @@
     xmlns:vm="using:NeoTaskmgr.ViewModels">
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="Delete" Invoked="EndTaskAccelerator_Invoked" />
+
     </Page.KeyboardAccelerators>
 
     <Page.Resources>
@@ -131,6 +132,7 @@
         <controls:DataTable
             Grid.Row="1"
             Columns="{x:Bind ViewModel.Columns}"
+            PreviewKeyDown="Table_PreviewKeyDown"
             ItemTemplateSelector="{StaticResource RowTemplateSelector}"
             ItemsSource="{x:Bind ViewModel.Rows}"
             SelectedItem="{x:Bind ViewModel.SelectedRow, Mode=TwoWay}">

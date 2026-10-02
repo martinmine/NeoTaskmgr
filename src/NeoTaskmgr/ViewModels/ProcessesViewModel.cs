@@ -42,7 +42,7 @@ public sealed class ProcessesViewModel : ObservableObject
         _diskColumn = Number("Disk", 90, r => r.DiskBytesPerSecond);
         _networkColumn = Number("Network", 90, r => r.NetworkBytesPerSecond ?? -1);
         _gpuColumn = Number("Gpu", 80, r => r.GpuPercent);
-        Columns = new TableColumns(
+        Columns = new TableColumns("Processes",
         [
             Text("Name", 280, r => r.Name, canHide: false),
             Text("Status", 120, r => r.StatusText),
@@ -68,8 +68,7 @@ public sealed class ProcessesViewModel : ObservableObject
         // Resuming a process that is not suspended has no effect.
         ResumeCommand = new RelayCommand(
             () => _ = _runner.RunForEachAsync(SelectedProcess!.Processes.Select(p => p.Key), ProcessActions.Resume), () => SelectedProcess is not null);
-        SwitchToCommand = new RelayCommand(() => _ = _runner.RunAsync(() => ShellActions.SwitchTo(SelectedProcess!.Window!.Handle)),
-            () => SelectedProcess?.Window is not null);
+        SwitchToCommand = new RelayCommand(() => _ = SwitchToAsync(), () => SelectedProcess?.Window is not null);
         CreateDumpFileCommand = new RelayCommand(() => _ = _runner.CreateDumpFileAsync(SelectedProcess!.Root.Key, SelectedProcess.Root.Counters.Name),
             () => SelectedProcess is not null);
         GoToDetailsCommand = new RelayCommand(() => GoToDetailsRequested?.Invoke(SelectedProcess!.Root.Counters.Pid), () => SelectedProcess is not null);
@@ -89,6 +88,9 @@ public sealed class ProcessesViewModel : ObservableObject
 
     /// <summary>Asks the window to show the services hosted by the process (by PID).</summary>
     public event Action<int>? GoToServicesRequested;
+
+    /// <summary>Another app was brought to the front, so this window can minimize itself (when set to).</summary>
+    public event Action? SwitchedToApp;
 
     public TableColumns Columns { get; }
 
@@ -195,6 +197,18 @@ public sealed class ProcessesViewModel : ObservableObject
         Refresh();
     }
 
+    /// <summary>Expands or collapses the selected app (from the keyboard). Returns whether anything changed.</summary>
+    public bool SetSelectedExpanded(bool isExpanded)
+    {
+        if (SelectedProcess is not { CanExpand: true } row || row.IsExpanded == isExpanded)
+        {
+            return false;
+        }
+
+        ToggleExpanded(row);
+        return true;
+    }
+
     private void ToggleExpanded(ProcessGroupRowViewModel row)
     {
         row.IsExpanded = !row.IsExpanded;
@@ -297,6 +311,12 @@ public sealed class ProcessesViewModel : ObservableObject
         {
             await _runner.RunForEachAsync(row.KeysForEnding, ProcessActions.End);
         }
+    }
+
+    private async Task SwitchToAsync()
+    {
+        await _runner.RunAsync(() => ShellActions.SwitchTo(SelectedProcess!.Window!.Handle));
+        SwitchedToApp?.Invoke();
     }
 
     private Task RestartExplorerAsync()

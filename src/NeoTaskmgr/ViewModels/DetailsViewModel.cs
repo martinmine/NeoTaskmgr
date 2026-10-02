@@ -25,7 +25,7 @@ public sealed class DetailsViewModel : ObservableObject
         _runner = runner;
 
         // The order must match the cells in the row template of DetailsPage.xaml.
-        Columns = new TableColumns(
+        Columns = new TableColumns("Details",
         [
             Text("Name", 200, r => r.Name, canHide: false),
             Number("Pid", 70, r => r.Key.Pid),

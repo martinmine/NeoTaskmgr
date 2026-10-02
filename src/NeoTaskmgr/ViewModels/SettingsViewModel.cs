@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using NeoTaskmgr.Core.Settings;
 using NeoTaskmgr.Mvvm;
@@ -38,6 +39,23 @@ public sealed class SettingsViewModel(SettingsStore store) : ObservableObject
     {
         get => _settings.AlwaysOnTop;
         set => Update(_settings with { AlwaysOnTop = value });
+    }
+
+    public bool MinimizeOnUse
+    {
+        get => _settings.MinimizeOnUse;
+        set => Update(_settings with { MinimizeOnUse = value });
+    }
+
+    /// <summary>The app's version, for the About section.</summary>
+    public string Version { get; } = typeof(SettingsViewModel).Assembly
+        .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion.Split('+')[0] ?? string.Empty;
+
+    /// <summary>Saves the window placement and table layouts, when the app closes.</summary>
+    public void SaveSession(WindowPlacement? window, IReadOnlyDictionary<string, TableLayout> tables)
+    {
+        _settings = _settings with { Window = window, Tables = tables };
+        store.Save(_settings);
     }
 
     private void Update(AppSettings settings, [CallerMemberName] string? propertyName = null)

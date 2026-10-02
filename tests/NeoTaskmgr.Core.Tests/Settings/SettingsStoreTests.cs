@@ -46,6 +46,29 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void Save_ThenLoad_RoundTripsWindowAndTables()
+    {
+        var store = new SettingsStore(FilePath);
+        var saved = new AppSettings(
+            MinimizeOnUse: true,
+            Window: new WindowPlacement(10, 20, 1200, 800, IsMaximized: true),
+            Tables: new Dictionary<string, TableLayout>
+            {
+                ["Details"] = new([new ColumnLayout("Name", 250, true), new ColumnLayout("Pid", 70, false)], "Pid", SortDescending: true),
+            });
+
+        store.Save(saved);
+        var loaded = store.Load();
+
+        // Records compare collections by reference, so compare the parts.
+        Assert.True(loaded.MinimizeOnUse);
+        Assert.Equal(saved.Window, loaded.Window);
+        var table = loaded.Tables!["Details"];
+        Assert.Equal(saved.Tables!["Details"].Columns, table.Columns);
+        Assert.Equal(("Pid", true), (table.SortColumn, table.SortDescending));
+    }
+
+    [Fact]
     public void Save_WritesEnumsAsStrings()
     {
         var store = new SettingsStore(FilePath);

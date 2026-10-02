@@ -103,6 +103,9 @@ public abstract class PerformanceDeviceViewModel(string key, PerformanceDeviceKi
 
     public ObservableCollection<StatViewModel> Stats { get; } = [];
 
+    /// <summary>Used by the list view as the device's accessible name, e.g. "CPU 6% 4.13 GHz".</summary>
+    public override string ToString() => string.Join(", ", new[] { Title, Subtitle, Detail }.Where(s => s.Length > 0));
+
     protected StatViewModel AddStat(string labelKey)
     {
         var stat = new StatViewModel(Strings.Get(labelKey));

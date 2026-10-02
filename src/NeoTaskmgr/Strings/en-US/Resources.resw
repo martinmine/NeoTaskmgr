@@ -709,4 +709,27 @@
   <data name="DisableMenuItem.Text" xml:space="preserve">
     <value>Disable</value>
   </data>
+  <data name="SettingsMinimizeOnUseTitle.Text" xml:space="preserve">
+    <value>Minimize on use</value>
+  </data>
+  <data name="SettingsMinimizeOnUseDescription.Text" xml:space="preserve">
+    <value>Minimize NeoTaskmgr after switching to an app with "Switch to"</value>
+  </data>
+  <data name="SettingsMinimizeOnUseToggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Minimize on use</value>
+  </data>
+  <data name="SettingsAboutHeader.Text" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="SettingsShortcutsHeader.Text" xml:space="preserve">
+    <value>Keyboard shortcuts</value>
+  </data>
+  <data name="SettingsShortcuts.Text" xml:space="preserve">
+    <value>Ctrl+F: Search
+Ctrl+1 to Ctrl+5: Processes, Performance, Startup apps, Details, Services
+F5: Refresh now (also when paused)
+Delete: End task
+Right / Left: Expand / collapse an app on the Processes page
+Shift+F10 or the Menu key: Open the context menu</value>
+  </data>
 </root>

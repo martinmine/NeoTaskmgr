@@ -24,7 +24,7 @@ public sealed class ServicesViewModel : ObservableObject
         _runner = runner;
 
         // The order must match the cells in the row template of ServicesPage.xaml.
-        Columns = new TableColumns(
+        Columns = new TableColumns("Services",
         [
             Text("Name", 220, r => r.Name, canHide: false),
             new TableColumn<ServiceRowViewModel>("Pid", Strings.Get("ColumnPid"), 70, (a, b) => a.Info.Pid.CompareTo(b.Info.Pid), isNumeric: true),

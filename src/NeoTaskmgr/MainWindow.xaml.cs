@@ -3,13 +3,16 @@ using System.Globalization;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Animation;
+using NeoTaskmgr.Controls;
 using NeoTaskmgr.Core;
 using NeoTaskmgr.Core.Settings;
 using NeoTaskmgr.Pages;
 using NeoTaskmgr.Services;
 using NeoTaskmgr.ViewModels;
 using Windows.Graphics;
+using Windows.System;
 using WinRT.Interop;
 
 namespace NeoTaskmgr;
@@ -32,6 +35,10 @@ public sealed partial class MainWindow : Window
     private readonly MainViewModel _viewModel;
     private readonly SettingsViewModel _settings;
     private readonly DialogService _dialogs;
+    private readonly bool _isPlacementRestored;
+
+    // The last bounds while not maximized or minimized, saved so the window reopens at that size.
+    private RectInt32 _restoredBounds;
 
     public MainWindow(MainViewModel viewModel, DialogService dialogs)
     {
@@ -52,17 +59,91 @@ public sealed partial class MainWindow : Window
         viewModel.Processes.GoToServicesRequested += GoToServices;
         viewModel.Details.GoToServicesRequested += GoToServices;
         viewModel.Services.GoToDetailsRequested += GoToDetails;
+        viewModel.Processes.SwitchedToApp += MinimizeOnUse;
 
         ApplyTheme();
         ApplyAlwaysOnTop();
         _settings.PropertyChanged += Settings_PropertyChanged;
+        HeatMap.UpdateHighContrast();
+        RootGrid.ActualThemeChanged += (_, _) => HeatMap.UpdateHighContrast();
+
+        _isPlacementRestored = RestorePlacement();
+        AppWindow.Changed += AppWindow_Changed;
+        Closed += (_, _) => _viewModel.SaveSession(new WindowPlacement(
+            _restoredBounds.X, _restoredBounds.Y, _restoredBounds.Width, _restoredBounds.Height,
+            Presenter.State == OverlappedPresenterState.Maximized));
     }
+
+    private OverlappedPresenter Presenter => (OverlappedPresenter)AppWindow.Presenter;
 
     private void RootGrid_Loaded(object sender, RoutedEventArgs e)
     {
         _dialogs.XamlRoot = RootGrid.XamlRoot;
-        var scale = RootGrid.XamlRoot.RasterizationScale;
-        AppWindow.Resize(new SizeInt32((int)(DefaultWidth * scale), (int)(DefaultHeight * scale)));
+        if (!_isPlacementRestored)
+        {
+            var scale = RootGrid.XamlRoot.RasterizationScale;
+            AppWindow.Resize(new SizeInt32((int)(DefaultWidth * scale), (int)(DefaultHeight * scale)));
+        }
+    }
+
+    /// <summary>Moves the window to where it was last time, if that is still on a display.</summary>
+    private bool RestorePlacement()
+    {
+        _restoredBounds = new RectInt32(AppWindow.Position.X, AppWindow.Position.Y, AppWindow.Size.Width, AppWindow.Size.Height);
+        if (_settings.Current.Window is not { } window)
+        {
+            return false;
+        }
+
+        var bounds = new RectInt32(window.X, window.Y, window.Width, window.Height);
+        if (DisplayArea.GetFromRect(bounds, DisplayAreaFallback.None) is null)
+        {
+            return false; // The display it was on is gone.
+        }
+
+        AppWindow.MoveAndResize(bounds);
+        _restoredBounds = bounds;
+        if (window.IsMaximized)
+        {
+            Presenter.Maximize();
+        }
+
+        return true;
+    }
+
+    private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
+    {
+        if ((args.DidPositionChange || args.DidSizeChange) && Presenter.State == OverlappedPresenterState.Restored)
+        {
+            _restoredBounds = new RectInt32(sender.Position.X, sender.Position.Y, sender.Size.Width, sender.Size.Height);
+        }
+    }
+
+    private void MinimizeOnUse()
+    {
+        if (_settings.Current.MinimizeOnUse)
+        {
+            Presenter.Minimize();
+        }
+    }
+
+    private void FocusSearch_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        SearchBox.Focus(FocusState.Keyboard);
+        args.Handled = true;
+    }
+
+    private void Refresh_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        _viewModel.RefreshCommand.Execute(null);
+        args.Handled = true;
+    }
+
+    /// <summary>Ctrl+1 to Ctrl+5 open the pages in navigation order.</summary>
+    private void GoToPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+    {
+        Navigate((AppPage)(sender.Key - VirtualKey.Number1));
+        args.Handled = true;
     }
 
     private void NavView_Loaded(object sender, RoutedEventArgs e)
@@ -148,11 +229,5 @@ public sealed partial class MainWindow : Window
         };
     }
 
-    private void ApplyAlwaysOnTop()
-    {
-        if (AppWindow.Presenter is OverlappedPresenter presenter)
-        {
-            presenter.IsAlwaysOnTop = _settings.Current.AlwaysOnTop;
-        }
-    }
+    private void ApplyAlwaysOnTop() => Presenter.IsAlwaysOnTop = _settings.Current.AlwaysOnTop;
 }

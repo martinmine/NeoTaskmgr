@@ -1,6 +1,7 @@
 # NeoTaskmgr
 
-A modern C# / WinUI 3 re-implementation of Windows Task Manager. See [docs/PLAN.md](docs/PLAN.md) for scope, architecture and milestones.
+A modern C# / WinUI 3 re-implementation of Windows Task Manager: Processes, Performance, Startup apps, Details and
+Services. See [docs/PLAN.md](docs/PLAN.md) for scope, architecture and decisions.
 
 ## Requirements
 
@@ -19,6 +20,44 @@ dotnet run --project src/NeoTaskmgr -p:Platform=x64
 Use `-p:Platform=ARM64` on ARM devices. The app is unpackaged and, like Task Manager, asks for administrator rights
 when the user is an administrator. To test the non-elevated experience, set the environment variable
 `__COMPAT_LAYER=RunAsInvoker` before launching.
+
+## Publish
+
+```powershell
+dotnet publish src/NeoTaskmgr -p:PublishProfile=win-x64
+dotnet publish src/NeoTaskmgr -p:PublishProfile=win-arm64
+```
+
+This creates a self-contained folder in `artifacts/publish/<runtime>` that runs without installing .NET or the
+Windows App SDK; start `NeoTaskmgr.exe`.
+
+## Keyboard shortcuts
+
+| Keys | Action |
+|---|---|
+| Ctrl+F | Search |
+| Ctrl+1 … Ctrl+5 | Processes, Performance, Startup apps, Details, Services |
+| F5 | Refresh now (also when updates are paused) |
+| Delete | End task |
+| Right / Left | Expand / collapse an app on the Processes page |
+| Shift+F10, Menu key | Context menu of the selected row |
+
+## Requires administrator rights
+
+Without them, NeoTaskmgr shows a banner and these features are unavailable or limited:
+
+- Details of other users' and system processes (user name, command line, path)
+- The per-process Network column (it uses kernel event tracing)
+- Starting and stopping services
+- Enabling or disabling startup apps for all users
+
+## Known limitations
+
+- The per-process Disk column counts all I/O of a process (including network and devices), not only disk activity.
+- Apps whose only windows are on another virtual desktop are listed as background processes.
+- Store app startup tasks are not listed on the Startup apps page, and startup impact is not measured.
+- CPU usage covers the first 64 logical processors (one processor group).
+- Settings are stored in `%LocalAppData%\NeoTaskmgr\settings.json`.
 
 ## Repository layout
 

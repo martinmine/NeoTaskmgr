@@ -13,6 +13,8 @@
     <!-- Unpackaged so the app can run elevated like Task Manager (see docs/PLAN.md §3). -->
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- Despite the name, also needed unpackaged: it includes the app's resources (.pri) when publishing. -->
+    <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
 
   <ItemGroup>

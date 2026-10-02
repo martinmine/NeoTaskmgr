@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SearchBox.PlaceholderText" xml:space="preserve">
+    <value>Type a name, publisher, or PID to search</value>
+  </data>
+  <data name="SearchBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Search</value>
+  </data>
+  <data name="NotElevatedInfoBar.Title" xml:space="preserve">
+    <value>Not running as administrator</value>
+  </data>
+  <data name="NotElevatedInfoBar.Message" xml:space="preserve">
+    <value>Some processes and services can't be shown or managed. Restart NeoTaskmgr as administrator to see everything.</value>
+  </data>
+  <data name="NavProcesses.Content" xml:space="preserve">
+    <value>Processes</value>
+  </data>
+  <data name="NavPerformance.Content" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="NavStartupApps.Content" xml:space="preserve">
+    <value>Startup apps</value>
+  </data>
+  <data name="NavDetails.Content" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="NavServices.Content" xml:space="preserve">
+    <value>Services</value>
+  </data>
+  <data name="ProcessesPageTitle.Text" xml:space="preserve">
+    <value>Processes</value>
+  </data>
+  <data name="PerformancePageTitle.Text" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="StartupAppsPageTitle.Text" xml:space="preserve">
+    <value>Startup apps</value>
+  </data>
+  <data name="DetailsPageTitle.Text" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="ServicesPageTitle.Text" xml:space="preserve">
+    <value>Services</value>
+  </data>
+  <data name="SettingsPageTitle.Text" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+  <data name="SettingsStartPageTitle.Text" xml:space="preserve">
+    <value>Default start page</value>
+  </data>
+  <data name="SettingsStartPageDescription.Text" xml:space="preserve">
+    <value>Choose which page to see when NeoTaskmgr opens</value>
+  </data>
+  <data name="SettingsStartPageComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Default start page</value>
+  </data>
+  <data name="StartPageProcesses.Content" xml:space="preserve">
+    <value>Processes</value>
+  </data>
+  <data name="StartPagePerformance.Content" xml:space="preserve">
+    <value>Performance</value>
+  </data>
+  <data name="StartPageStartupApps.Content" xml:space="preserve">
+    <value>Startup apps</value>
+  </data>
+  <data name="StartPageDetails.Content" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="StartPageServices.Content" xml:space="preserve">
+    <value>Services</value>
+  </data>
+  <data name="SettingsUpdateSpeedTitle.Text" xml:space="preserve">
+    <value>Real time update speed</value>
+  </data>
+  <data name="SettingsUpdateSpeedDescription.Text" xml:space="preserve">
+    <value>Change how often data is refreshed</value>
+  </data>
+  <data name="SettingsUpdateSpeedComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Real time update speed</value>
+  </data>
+  <data name="UpdateSpeedHigh.Content" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="UpdateSpeedNormal.Content" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="UpdateSpeedLow.Content" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="UpdateSpeedPaused.Content" xml:space="preserve">
+    <value>Paused</value>
+  </data>
+  <data name="SettingsThemeTitle.Text" xml:space="preserve">
+    <value>App theme</value>
+  </data>
+  <data name="SettingsThemeDescription.Text" xml:space="preserve">
+    <value>Select which app theme to display</value>
+  </data>
+  <data name="SettingsThemeComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>App theme</value>
+  </data>
+  <data name="ThemeSystem.Content" xml:space="preserve">
+    <value>Use system setting</value>
+  </data>
+  <data name="ThemeLight.Content" xml:space="preserve">
+    <value>Light</value>
+  </data>
+  <data name="ThemeDark.Content" xml:space="preserve">
+    <value>Dark</value>
+  </data>
+  <data name="SettingsAlwaysOnTopTitle.Text" xml:space="preserve">
+    <value>Always on top</value>
+  </data>
+  <data name="SettingsAlwaysOnTopDescription.Text" xml:space="preserve">
+    <value>Keep the NeoTaskmgr window on top of other windows</value>
+  </data>
+  <data name="SettingsAlwaysOnTopToggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Always on top</value>
+  </data>
+</root>

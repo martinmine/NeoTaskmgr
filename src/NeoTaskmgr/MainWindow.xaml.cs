@@ -4,6 +4,7 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using NeoTaskmgr.Controls;
 using NeoTaskmgr.Core;
@@ -202,8 +203,49 @@ public sealed partial class MainWindow : Window
 
     private void AppTitleBar_PaneToggleRequested(TitleBar sender, object args) => NavView.IsPaneOpen = !NavView.IsPaneOpen;
 
-    private void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args) =>
-        (NavFrame.Content as ISearchablePage)?.ApplySearch(sender.Text);
+    private void SearchBox_TextChanged(object sender, TextChangedEventArgs args)
+    {
+        ClearSearchButton.Visibility = XamlHelpers.NotEmpty(SearchBox.Text);
+        (NavFrame.Content as ISearchablePage)?.ApplySearch(SearchBox.Text);
+    }
+
+    /// <summary>
+    /// Shrinks the TextBox's built-in delete button away, as it only shows while focused;
+    /// <see cref="ClearSearchButton"/> replaces it and stays visible whenever there is text.
+    /// </summary>
+    private void SearchBox_Loaded(object sender, RoutedEventArgs e)
+    {
+        if (FindDescendant(SearchBox, "DeleteButton") is FrameworkElement deleteButton)
+        {
+            deleteButton.Width = 0;
+            deleteButton.Margin = new Thickness(0);
+        }
+    }
+
+    private static DependencyObject? FindDescendant(DependencyObject parent, string name)
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is FrameworkElement element && element.Name == name)
+            {
+                return child;
+            }
+
+            if (FindDescendant(child, name) is { } found)
+            {
+                return found;
+            }
+        }
+
+        return null;
+    }
+
+    private void ClearSearchButton_Click(object sender, RoutedEventArgs e)
+    {
+        SearchBox.Text = string.Empty;
+        SearchBox.Focus(FocusState.Programmatic);
+    }
 
     private void Settings_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {

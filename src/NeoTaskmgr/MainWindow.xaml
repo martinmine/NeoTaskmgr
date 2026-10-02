@@ -50,14 +50,39 @@
             <TitleBar.IconSource>
                 <ImageIconSource ImageSource="ms-appx:///Assets/AppIcon.ico" />
             </TitleBar.IconSource>
-            <AutoSuggestBox
-                x:Name="SearchBox"
-                x:Uid="SearchBox"
+            <Grid
                 MinWidth="320"
                 MaxWidth="560"
-                VerticalAlignment="Center"
-                QueryIcon="Find"
-                TextChanged="SearchBox_TextChanged" />
+                VerticalAlignment="Center">
+                <TextBox
+                    x:Name="SearchBox"
+                    x:Uid="SearchBox"
+                    Padding="36,5,36,6"
+                    Loaded="SearchBox_Loaded"
+                    TextChanged="SearchBox_TextChanged" />
+                <FontIcon
+                    Margin="12,0,0,0"
+                    HorizontalAlignment="Left"
+                    FontSize="14"
+                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                    Glyph="&#xE721;"
+                    IsHitTestVisible="False" />
+                <Button
+                    x:Name="ClearSearchButton"
+                    x:Uid="ClearSearchButton"
+                    Width="32"
+                    Height="26"
+                    Margin="0,0,3,0"
+                    Padding="0"
+                    HorizontalAlignment="Right"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Click="ClearSearchButton_Click"
+                    IsTabStop="False"
+                    Visibility="Collapsed">
+                    <FontIcon FontSize="12" Glyph="&#xE711;" />
+                </Button>
+            </Grid>
         </TitleBar>
 
         <InfoBar

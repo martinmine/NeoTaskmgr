@@ -18,6 +18,12 @@
   <data name="SearchBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="ClearSearchButton.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Clear search</value>
+  </data>
+  <data name="ClearSearchButton.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Clear search</value>
+  </data>
   <data name="NotElevatedInfoBar.Title" xml:space="preserve">
     <value>Not running as administrator</value>
   </data>

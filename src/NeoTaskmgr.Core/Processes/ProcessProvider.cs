@@ -7,14 +7,22 @@ public sealed class ProcessProvider : IDisposable
 
     private readonly SystemProcessReader _reader = new();
     private readonly ProcessDetailsReader _detailsReader = new();
-    private readonly CpuUsageTracker _cpuUsage = new(SystemInfo.LogicalProcessorCount);
+    private readonly RateTracker _cpuTime = new(p => p.CpuTime.Ticks);
+    private readonly RateTracker _ioBytes = new(p => p.IoBytes);
     private Dictionary<ProcessKey, ProcessDetails> _details = [];
+    private TimeSpan _previousTimestamp;
 
-    /// <param name="timestamp">A monotonic timestamp used to compute CPU usage since the previous sample.</param>
-    public ProcessSnapshot Sample(TimeSpan timestamp)
+    /// <param name="timestamp">A monotonic timestamp used to compute rates since the previous sample.</param>
+    /// <param name="gpuByPid">GPU utilization per process ID.</param>
+    /// <param name="networkBytesByPid">Network bytes per process ID since the previous sample, or null if unknown.</param>
+    public ProcessSnapshot Sample(
+        TimeSpan timestamp, IReadOnlyDictionary<int, double>? gpuByPid = null, IReadOnlyDictionary<int, long>? networkBytesByPid = null)
     {
         var counters = _reader.Read();
-        var cpuUsage = _cpuUsage.Update(counters, timestamp);
+        var cpuTicksPerSecond = _cpuTime.Update(counters, timestamp);
+        var ioBytesPerSecond = _ioBytes.Update(counters, timestamp);
+        var seconds = (timestamp - _previousTimestamp).TotalSeconds;
+        _previousTimestamp = timestamp;
         var windows = AppWindowReader.Read();
 
         // Details are read once per process; rebuilding the dictionary drops exited processes.
@@ -29,11 +37,15 @@ public sealed class ProcessProvider : IDisposable
             }
 
             details[process.Key] = processDetails;
-            processes[i] = new ProcessInfo(process, cpuUsage[i], processDetails)
+            var cpuPercent = cpuTicksPerSecond[i] / TimeSpan.TicksPerSecond / SystemInfo.LogicalProcessorCount * 100;
+            processes[i] = new ProcessInfo(process, Math.Clamp(cpuPercent, 0, 100), processDetails)
             {
                 Window = windows.GetValueOrDefault(process.Pid),
                 // Efficiency mode always lowers the priority to idle, so only those processes need to be checked.
                 IsEfficiencyMode = process.BasePriority == IdleBasePriority && ProcessActions.IsEfficiencyModeEnabled(process.Key),
+                DiskBytesPerSecond = ioBytesPerSecond[i],
+                NetworkBytesPerSecond = networkBytesByPid is null ? null : seconds > 0 ? networkBytesByPid.GetValueOrDefault(process.Pid) / seconds : 0,
+                GpuPercent = gpuByPid?.GetValueOrDefault(process.Pid) ?? 0,
             };
         }
 

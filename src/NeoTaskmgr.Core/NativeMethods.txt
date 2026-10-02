@@ -45,3 +45,31 @@ GetActiveProcessorCount
 ALL_PROCESSOR_GROUPS
 GlobalMemoryStatusEx
 WIN32_ERROR
+
+// Performance counters
+PdhOpenQuery
+PdhAddEnglishCounter
+PdhCollectQueryData
+PdhGetFormattedCounterValue
+PdhGetFormattedCounterArray
+PdhCloseQuery
+PDH_FMT_COUNTERVALUE_ITEM_W
+PDH_FMT
+PDH_MORE_DATA
+
+// CPU and memory
+GetLogicalProcessorInformationEx
+IsProcessorFeaturePresent
+GetPerformanceInfo
+GetPhysicallyInstalledSystemMemory
+GetSystemFirmwareTable
+
+// Disks
+CreateFile
+DeviceIoControl
+STORAGE_PROPERTY_QUERY
+STORAGE_DEVICE_DESCRIPTOR
+DEVICE_SEEK_PENALTY_DESCRIPTOR
+DISK_GEOMETRY_EX
+IOCTL_STORAGE_QUERY_PROPERTY
+IOCTL_DISK_GET_DRIVE_GEOMETRY_EX

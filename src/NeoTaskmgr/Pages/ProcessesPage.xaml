@@ -71,6 +71,24 @@
                             Background="{x:Bind controls:HeatMap.Brush(MemoryHeat), Mode=OneWay}">
                             <TextBlock HorizontalAlignment="Right" Text="{x:Bind MemoryText, Mode=OneWay}" />
                         </Border>
+                        <Border
+                            Margin="-6,0"
+                            Padding="6,0"
+                            Background="{x:Bind controls:HeatMap.Brush(DiskHeat), Mode=OneWay}">
+                            <TextBlock HorizontalAlignment="Right" Text="{x:Bind DiskText, Mode=OneWay}" />
+                        </Border>
+                        <Border
+                            Margin="-6,0"
+                            Padding="6,0"
+                            Background="{x:Bind controls:HeatMap.Brush(NetworkHeat), Mode=OneWay}">
+                            <TextBlock HorizontalAlignment="Right" Text="{x:Bind NetworkText, Mode=OneWay}" />
+                        </Border>
+                        <Border
+                            Margin="-6,0"
+                            Padding="6,0"
+                            Background="{x:Bind controls:HeatMap.Brush(GpuHeat), Mode=OneWay}">
+                            <TextBlock HorizontalAlignment="Right" Text="{x:Bind GpuText, Mode=OneWay}" />
+                        </Border>
                     </controls:TableRowPanel>
                 </DataTemplate>
             </pages:ProcessesRowTemplateSelector.ProcessTemplate>

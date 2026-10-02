@@ -84,6 +84,7 @@ internal sealed unsafe class SystemProcessReader : IDisposable
             PeakWorkingSet = (long)process->PeakWorkingSetSize,
             CommitSize = (long)process->PagefileUsage,
             CpuTime = TimeSpan.FromTicks(process->KernelTime + process->UserTime),
+            IoBytes = process->ReadTransferCount + process->WriteTransferCount,
         };
     }
 

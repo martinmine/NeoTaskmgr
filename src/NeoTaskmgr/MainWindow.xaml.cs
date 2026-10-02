@@ -87,6 +87,7 @@ public sealed partial class MainWindow : Window
     private object? GetPageViewModel(AppPage page) => page switch
     {
         AppPage.Processes => _viewModel.Processes,
+        AppPage.Performance => _viewModel.Performance,
         AppPage.Details => _viewModel.Details,
         _ => null,
     };

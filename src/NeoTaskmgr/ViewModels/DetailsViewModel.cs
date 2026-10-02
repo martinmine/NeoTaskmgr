@@ -45,6 +45,9 @@ public sealed class DetailsViewModel : ObservableObject
             Text("Description", 260, r => r.Description),
             Text("ImagePath", 300, r => r.ImagePath, isVisible: false),
             Text("CommandLine", 400, r => r.CommandLine, isVisible: false),
+            Number("Disk", 90, r => r.Info.DiskBytesPerSecond, isVisible: false),
+            Number("Network", 90, r => r.Info.NetworkBytesPerSecond ?? -1, isVisible: false),
+            Number("Gpu", 70, r => r.Info.GpuPercent, isVisible: false),
         ]);
         EndTaskCommand = new RelayCommand(() => _ = EndAsync(tree: false), HasSelection);
         EndProcessTreeCommand = new RelayCommand(() => _ = EndAsync(tree: true), HasSelection);

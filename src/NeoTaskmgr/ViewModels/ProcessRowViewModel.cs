@@ -32,6 +32,9 @@ public sealed class ProcessRowViewModel(ProcessInfo info) : ObservableObject
     public string Description => Info.Details.Description ?? string.Empty;
     public string ImagePath => Info.Details.ImagePath ?? string.Empty;
     public string CommandLine => Info.Details.CommandLine ?? string.Empty;
+    public string DiskText => Format.MegabytesPerSecond(Info.DiskBytesPerSecond);
+    public string NetworkText => Info.NetworkBytesPerSecond is { } bytes ? Format.Megabits(bytes) : string.Empty;
+    public string GpuText => Format.CpuPercent(Info.GpuPercent);
 
     /// <summary>Used by the list view as the row's accessible name.</summary>
     public override string ToString() => Name;

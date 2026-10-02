@@ -6,7 +6,7 @@ using NeoTaskmgr.Core.Settings;
 namespace NeoTaskmgr.Core.Sampling;
 
 /// <summary>Everything collected in one sampling tick.</summary>
-public sealed record SystemSnapshot(ProcessSnapshot Processes, MemoryStatus Memory);
+public sealed record SystemSnapshot(ProcessSnapshot Processes, PerformanceSnapshot Performance);
 
 /// <summary>
 /// Collects a <see cref="SystemSnapshot"/> on a background thread at the configured <see cref="UpdateSpeed"/>.
@@ -14,7 +14,6 @@ public sealed record SystemSnapshot(ProcessSnapshot Processes, MemoryStatus Memo
 /// </summary>
 public sealed class SamplingService(UpdateSpeed speed) : IDisposable
 {
-    private readonly ProcessProvider _processes = new();
     private readonly SemaphoreSlim _wake = new(0);
     private readonly CancellationTokenSource _stop = new();
     private volatile UpdateSpeed _speed = speed;
@@ -41,11 +40,7 @@ public sealed class SamplingService(UpdateSpeed speed) : IDisposable
     public void Dispose()
     {
         _stop.Cancel();
-        // Only free native buffers once the loop is guaranteed to no longer use them.
-        if (_loop is null || _loop.Wait(TimeSpan.FromSeconds(2)))
-        {
-            _processes.Dispose();
-        }
+        _loop?.Wait(TimeSpan.FromSeconds(2));
     }
 
     private void Wake()
@@ -58,12 +53,20 @@ public sealed class SamplingService(UpdateSpeed speed) : IDisposable
 
     private async Task RunAsync(CancellationToken stop)
     {
+        // Created on the sampling thread, so slow initialization (such as starting event tracing) does not delay startup.
+        using var processes = new ProcessProvider();
+        using var performance = new PerformanceProvider();
+        using var networkActivity = new NetworkActivityMonitor();
         var clock = Stopwatch.StartNew();
+
         while (!stop.IsCancellationRequested)
         {
             try
             {
-                Sampled?.Invoke(new SystemSnapshot(_processes.Sample(clock.Elapsed), MemoryStatus.Read()));
+                var timestamp = clock.Elapsed;
+                var (performanceSnapshot, gpuByPid) = performance.Sample(timestamp);
+                var processSnapshot = processes.Sample(timestamp, gpuByPid, networkActivity.TakeBytes());
+                Sampled?.Invoke(new SystemSnapshot(processSnapshot, performanceSnapshot));
             }
             catch (Exception e)
             {

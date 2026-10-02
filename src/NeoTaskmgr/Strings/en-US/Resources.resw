@@ -42,9 +42,6 @@
   <data name="ProcessesPageTitle.Text" xml:space="preserve">
     <value>Processes</value>
   </data>
-  <data name="PerformancePageTitle.Text" xml:space="preserve">
-    <value>Performance</value>
-  </data>
   <data name="StartupAppsPageTitle.Text" xml:space="preserve">
     <value>Startup apps</value>
   </data>
@@ -402,5 +399,230 @@
   </data>
   <data name="PropertiesMenuItem.Text" xml:space="preserve">
     <value>Properties</value>
+  </data>
+  <data name="ColumnDisk" xml:space="preserve">
+    <value>Disk</value>
+  </data>
+  <data name="ColumnNetwork" xml:space="preserve">
+    <value>Network</value>
+  </data>
+  <data name="ColumnGpu" xml:space="preserve">
+    <value>GPU</value>
+  </data>
+  <data name="PerformanceCpu" xml:space="preserve">
+    <value>CPU</value>
+  </data>
+  <data name="PerformanceMemory" xml:space="preserve">
+    <value>Memory</value>
+  </data>
+  <data name="PerformanceDisk" xml:space="preserve">
+    <value>Disk {0}</value>
+  </data>
+  <data name="PerformanceDiskWithVolumes" xml:space="preserve">
+    <value>Disk {0} ({1})</value>
+  </data>
+  <data name="PerformanceGpu" xml:space="preserve">
+    <value>GPU {0}</value>
+  </data>
+  <data name="NetworkWiFi" xml:space="preserve">
+    <value>Wi-Fi</value>
+  </data>
+  <data name="NetworkEthernet" xml:space="preserve">
+    <value>Ethernet</value>
+  </data>
+  <data name="NetworkSendReceive" xml:space="preserve">
+    <value>S: {0}  R: {1}</value>
+  </data>
+  <data name="StatUtilization" xml:space="preserve">
+    <value>Utilization</value>
+  </data>
+  <data name="StatSpeed" xml:space="preserve">
+    <value>Speed</value>
+  </data>
+  <data name="StatProcesses" xml:space="preserve">
+    <value>Processes</value>
+  </data>
+  <data name="StatThreads" xml:space="preserve">
+    <value>Threads</value>
+  </data>
+  <data name="StatHandles" xml:space="preserve">
+    <value>Handles</value>
+  </data>
+  <data name="StatUptime" xml:space="preserve">
+    <value>Up time</value>
+  </data>
+  <data name="StatBaseSpeed" xml:space="preserve">
+    <value>Base speed</value>
+  </data>
+  <data name="StatSockets" xml:space="preserve">
+    <value>Sockets</value>
+  </data>
+  <data name="StatCores" xml:space="preserve">
+    <value>Cores</value>
+  </data>
+  <data name="StatLogicalProcessors" xml:space="preserve">
+    <value>Logical processors</value>
+  </data>
+  <data name="StatVirtualization" xml:space="preserve">
+    <value>Virtualization</value>
+  </data>
+  <data name="StatL1Cache" xml:space="preserve">
+    <value>L1 cache</value>
+  </data>
+  <data name="StatL2Cache" xml:space="preserve">
+    <value>L2 cache</value>
+  </data>
+  <data name="StatL3Cache" xml:space="preserve">
+    <value>L3 cache</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Disabled" xml:space="preserve">
+    <value>Disabled</value>
+  </data>
+  <data name="StatInUse" xml:space="preserve">
+    <value>In use</value>
+  </data>
+  <data name="StatAvailable" xml:space="preserve">
+    <value>Available</value>
+  </data>
+  <data name="StatCommitted" xml:space="preserve">
+    <value>Committed</value>
+  </data>
+  <data name="StatCached" xml:space="preserve">
+    <value>Cached</value>
+  </data>
+  <data name="StatPagedPool" xml:space="preserve">
+    <value>Paged pool</value>
+  </data>
+  <data name="StatNonPagedPool" xml:space="preserve">
+    <value>Non-paged pool</value>
+  </data>
+  <data name="StatSlotsUsed" xml:space="preserve">
+    <value>Slots used</value>
+  </data>
+  <data name="SlotsUsedValue" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="StatFormFactor" xml:space="preserve">
+    <value>Form factor</value>
+  </data>
+  <data name="StatHardwareReserved" xml:space="preserve">
+    <value>Hardware reserved</value>
+  </data>
+  <data name="NotAvailable" xml:space="preserve">
+    <value>Not available</value>
+  </data>
+  <data name="StatActiveTime" xml:space="preserve">
+    <value>Active time</value>
+  </data>
+  <data name="StatResponseTime" xml:space="preserve">
+    <value>Average response time</value>
+  </data>
+  <data name="StatReadSpeed" xml:space="preserve">
+    <value>Read speed</value>
+  </data>
+  <data name="StatWriteSpeed" xml:space="preserve">
+    <value>Write speed</value>
+  </data>
+  <data name="StatCapacity" xml:space="preserve">
+    <value>Capacity</value>
+  </data>
+  <data name="StatFormatted" xml:space="preserve">
+    <value>Formatted</value>
+  </data>
+  <data name="StatSystemDisk" xml:space="preserve">
+    <value>System disk</value>
+  </data>
+  <data name="StatType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="DiskTypeSsd" xml:space="preserve">
+    <value>SSD</value>
+  </data>
+  <data name="DiskTypeNvmeSsd" xml:space="preserve">
+    <value>SSD (NVMe)</value>
+  </data>
+  <data name="DiskTypeHdd" xml:space="preserve">
+    <value>HDD</value>
+  </data>
+  <data name="StatSend" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="StatReceive" xml:space="preserve">
+    <value>Receive</value>
+  </data>
+  <data name="StatAdapterName" xml:space="preserve">
+    <value>Adapter name</value>
+  </data>
+  <data name="StatConnectionType" xml:space="preserve">
+    <value>Connection type</value>
+  </data>
+  <data name="StatIPv4" xml:space="preserve">
+    <value>IPv4 address</value>
+  </data>
+  <data name="StatIPv6" xml:space="preserve">
+    <value>IPv6 address</value>
+  </data>
+  <data name="StatLinkSpeed" xml:space="preserve">
+    <value>Link speed</value>
+  </data>
+  <data name="StatDedicatedGpuMemory" xml:space="preserve">
+    <value>Dedicated GPU memory</value>
+  </data>
+  <data name="StatSharedGpuMemory" xml:space="preserve">
+    <value>Shared GPU memory</value>
+  </data>
+  <data name="StatGpuMemory" xml:space="preserve">
+    <value>GPU memory</value>
+  </data>
+  <data name="CpuUtilizationLabel.Text" xml:space="preserve">
+    <value>% Utilization</value>
+  </data>
+  <data name="LogicalProcessorsToggle.OnContent" xml:space="preserve">
+    <value>Logical processors</value>
+  </data>
+  <data name="LogicalProcessorsToggle.OffContent" xml:space="preserve">
+    <value>Logical processors</value>
+  </data>
+  <data name="LogicalProcessorsToggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Show logical processors</value>
+  </data>
+  <data name="MemoryUsageLabel.Text" xml:space="preserve">
+    <value>Memory usage</value>
+  </data>
+  <data name="MemoryCompositionLabel.Text" xml:space="preserve">
+    <value>Memory composition</value>
+  </data>
+  <data name="MemoryInUsePart.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>In use</value>
+  </data>
+  <data name="MemoryModifiedPart.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="MemoryStandbyPart.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Standby</value>
+  </data>
+  <data name="MemoryFreePart.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Free</value>
+  </data>
+  <data name="DiskActiveTimeLabel.Text" xml:space="preserve">
+    <value>Active time</value>
+  </data>
+  <data name="DiskTransferRateLabel.Text" xml:space="preserve">
+    <value>Disk transfer rate (dashed: write)</value>
+  </data>
+  <data name="NetworkThroughputLabel.Text" xml:space="preserve">
+    <value>Throughput (dashed: send)</value>
+  </data>
+  <data name="GpuDedicatedMemoryLabel.Text" xml:space="preserve">
+    <value>Dedicated GPU memory usage</value>
+  </data>
+  <data name="GpuSharedMemoryLabel.Text" xml:space="preserve">
+    <value>Shared GPU memory usage</value>
+  </data>
+  <data name="PerformanceDeviceList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Devices</value>
   </data>
 </root>

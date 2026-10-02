@@ -3,6 +3,7 @@ using System.Globalization;
 using NeoTaskmgr.Controls;
 using NeoTaskmgr.Core.Collections;
 using NeoTaskmgr.Core.Formatting;
+using NeoTaskmgr.Core.Performance;
 using NeoTaskmgr.Core.Processes;
 using NeoTaskmgr.Core.Sampling;
 using NeoTaskmgr.Core.Shell;
@@ -18,6 +19,9 @@ public sealed class ProcessesViewModel : ObservableObject
     private readonly ProcessCommandRunner _runner;
     private readonly TableColumn<ProcessGroupRowViewModel> _cpuColumn;
     private readonly TableColumn<ProcessGroupRowViewModel> _memoryColumn;
+    private readonly TableColumn<ProcessGroupRowViewModel> _diskColumn;
+    private readonly TableColumn<ProcessGroupRowViewModel> _networkColumn;
+    private readonly TableColumn<ProcessGroupRowViewModel> _gpuColumn;
     private readonly SectionRowViewModel[] _sections = Enum.GetValues<ProcessCategory>().Select(c => new SectionRowViewModel(c)).ToArray();
 
     private Dictionary<ProcessKey, ProcessGroupRowViewModel> _groupRows = []; // By the group's root process.
@@ -33,6 +37,9 @@ public sealed class ProcessesViewModel : ObservableObject
         // The order must match the cells in the row template of ProcessesPage.xaml.
         _cpuColumn = Number("Cpu", 80, r => r.CpuPercent);
         _memoryColumn = Number("Memory", 110, r => r.Memory);
+        _diskColumn = Number("Disk", 90, r => r.DiskBytesPerSecond);
+        _networkColumn = Number("Network", 90, r => r.NetworkBytesPerSecond ?? -1);
+        _gpuColumn = Number("Gpu", 80, r => r.GpuPercent);
         Columns = new TableColumns(
         [
             Text("Name", 280, r => r.Name, canHide: false),
@@ -44,6 +51,9 @@ public sealed class ProcessesViewModel : ObservableObject
             Text("CommandLine", 300, r => r.CommandLine, isVisible: false),
             _cpuColumn,
             _memoryColumn,
+            _diskColumn,
+            _networkColumn,
+            _gpuColumn,
         ]);
         EndTaskCommand = new RelayCommand(() => _ = EndTaskAsync(), () => SelectedProcess is not null);
         RestartExplorerCommand = new RelayCommand(() => _ = RestartExplorerAsync(), () => SelectedProcess?.IsExplorer == true);
@@ -113,10 +123,9 @@ public sealed class ProcessesViewModel : ObservableObject
     public void Apply(SystemSnapshot snapshot)
     {
         var processes = snapshot.Processes.Processes;
-        var totalMemory = snapshot.Memory.TotalPhysical;
-        var idleCpu = processes.FirstOrDefault(p => p.Counters.Pid == 0)?.CpuPercent ?? 0;
-        _cpuColumn.Summary = Format.WholePercent(100 - idleCpu);
-        _memoryColumn.Summary = Format.WholePercent(snapshot.Memory.UsedPercent);
+        var performance = snapshot.Performance;
+        var totalMemory = performance.Memory.TotalPhysical;
+        UpdateSummaries(performance);
 
         // Rebuilding the dictionaries drops rows of exited processes; existing rows are reused to keep their state.
         var groupRows = new Dictionary<ProcessKey, ProcessGroupRowViewModel>();
@@ -141,6 +150,18 @@ public sealed class ProcessesViewModel : ObservableObject
         _groupRows = groupRows;
         _childRows = childRows;
         Refresh();
+    }
+
+    /// <summary>Shows system-wide totals above the columns, like Task Manager.</summary>
+    private void UpdateSummaries(PerformanceSnapshot performance)
+    {
+        _cpuColumn.Summary = Format.WholePercent(performance.Cpu.UsagePercent);
+        _memoryColumn.Summary = Format.WholePercent(performance.Memory.UsedPercent);
+        _diskColumn.Summary = Format.WholePercent(performance.Disks.Select(d => d.ActivePercent).DefaultIfEmpty().Max());
+        var linkSpeed = performance.NetworkAdapters.Sum(a => (double)a.LinkSpeedBitsPerSecond);
+        var throughput = performance.NetworkAdapters.Sum(a => a.SendBitsPerSecond + a.ReceiveBitsPerSecond);
+        _networkColumn.Summary = Format.WholePercent(linkSpeed > 0 ? 100 * throughput / linkSpeed : 0);
+        _gpuColumn.Summary = Format.WholePercent(performance.Gpus.Select(g => g.UtilizationPercent).DefaultIfEmpty().Max());
     }
 
     public void ApplySearch(string text)

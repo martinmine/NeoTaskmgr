@@ -90,6 +90,9 @@
                         <TextBlock Text="{x:Bind Description, Mode=OneWay}" />
                         <TextBlock Text="{x:Bind ImagePath, Mode=OneWay}" />
                         <TextBlock Text="{x:Bind CommandLine, Mode=OneWay}" />
+                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind DiskText, Mode=OneWay}" />
+                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind NetworkText, Mode=OneWay}" />
+                        <TextBlock HorizontalAlignment="Right" Text="{x:Bind GpuText, Mode=OneWay}" />
                     </controls:TableRowPanel>
                 </DataTemplate>
             </controls:DataTable.ItemTemplate>

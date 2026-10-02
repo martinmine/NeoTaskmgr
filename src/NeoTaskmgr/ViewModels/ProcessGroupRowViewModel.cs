@@ -14,6 +14,9 @@ public sealed class ProcessGroupRowViewModel : ObservableObject
     // The usage at which the heat map shading is at its darkest.
     private const double HotCpuPercent = 25;
     private const double HotMemoryFraction = 0.1;
+    private const double HotDiskBytesPerSecond = 10 * 1024 * 1024;
+    private const double HotNetworkBytesPerSecond = 1024 * 1024;
+    private const double HotGpuPercent = 25;
 
     private bool _isExpanded;
     private long _totalMemory = 1;
@@ -72,6 +75,19 @@ public sealed class ProcessGroupRowViewModel : ObservableObject
     public long Memory => Processes.Sum(p => p.Counters.PrivateWorkingSet);
     public string MemoryText => Format.Megabytes(Memory);
     public double MemoryHeat => Memory / (_totalMemory * HotMemoryFraction);
+
+    public double DiskBytesPerSecond => Processes.Sum(p => p.DiskBytesPerSecond);
+    public string DiskText => Format.MegabytesPerSecond(DiskBytesPerSecond);
+    public double DiskHeat => DiskBytesPerSecond / HotDiskBytesPerSecond;
+
+    /// <summary>Null when per-process network usage is unavailable (without administrator rights).</summary>
+    public double? NetworkBytesPerSecond => Root.NetworkBytesPerSecond is null ? null : Processes.Sum(p => p.NetworkBytesPerSecond ?? 0);
+    public string NetworkText => NetworkBytesPerSecond is { } bytes ? Format.Megabits(bytes) : string.Empty;
+    public double NetworkHeat => (NetworkBytesPerSecond ?? 0) / HotNetworkBytesPerSecond;
+
+    public double GpuPercent => Math.Min(100, Processes.Sum(p => p.GpuPercent));
+    public string GpuText => Format.Percent(GpuPercent);
+    public double GpuHeat => GpuPercent / HotGpuPercent;
 
     /// <summary>Processes in the order to end them: the ones started last first.</summary>
     public IEnumerable<ProcessKey> KeysForEnding => Processes.Reverse().Select(p => p.Key);

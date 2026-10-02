@@ -24,6 +24,9 @@ public sealed record ProcessCounters
     public long CommitSize { get; init; }
     public TimeSpan CpuTime { get; init; }
 
+    /// <summary>Bytes read and written by all I/O of the process (files, devices and network).</summary>
+    public long IoBytes { get; init; }
+
     public ProcessKey Key => new(Pid, CreateTime);
 }
 
@@ -53,6 +56,18 @@ public sealed record ProcessInfo(ProcessCounters Counters, double CpuPercent, Pr
 
     /// <summary>Windows 11 efficiency mode (EcoQoS power throttling with idle priority).</summary>
     public bool IsEfficiencyMode { get; init; }
+
+    /// <summary>
+    /// Read and write rate of the process's I/O. Unlike Task Manager (which traces disk activity), this also counts
+    /// I/O to devices and the network.
+    /// </summary>
+    public double DiskBytesPerSecond { get; init; }
+
+    /// <summary>Network bytes sent and received per second; null when unavailable (requires administrator rights).</summary>
+    public double? NetworkBytesPerSecond { get; init; }
+
+    /// <summary>Utilization of the busiest GPU engine used by the process.</summary>
+    public double GpuPercent { get; init; }
 
     /// <summary>The name Task Manager shows: the file description, or the image name if there is none.</summary>
     public string DisplayName => Details.Description ?? Counters.Name;

@@ -141,7 +141,7 @@ Each milestone ends with a buildable, runnable app.
 1. ✅ **Scaffolding** – solution, `Directory.Build.props`, `Directory.Packages.props` (central package versions for the approved packages), `.editorconfig`, WinUI app + Core lib + xUnit test project, CsWin32 wired up in Core, `app.manifest` (highestAvailable), shell with `NavigationView`, empty pages, title bar, settings persistence, MVVM base classes, `.gitignore`, README.
 2. ✅ **Sampling + Details page** – `SamplingService`, `ProcessProvider` (NtQuerySystemInformation), CPU % delta logic, `DataTable` control, Details page with sorting, column picker, search filter, End task / End tree / priority / affinity / open file location.
 3. ✅ **Processes page** – grouping (Apps/Background/Windows), parent/child tree, icons, heat-map, status column, efficiency mode, suspend, run new task, restart Explorer, create dump file, summary totals in column headers.
-4. **Performance page** – `PerformanceGraph`, CPU (overall + logical processors), Memory (incl. composition bar), Disk, Network, GPU; per-process Disk, GPU and Network (ETW/TraceEvent) columns added to Processes/Details.
+4. ✅ **Performance page** – `PerformanceGraph`, CPU (overall + logical processors), Memory (incl. composition bar), Disk, Network, GPU; per-process Disk, GPU and Network (ETW/TraceEvent) columns added to Processes/Details.
 5. **Services page** – list, actions, go to details.
 6. **Startup apps page** – registry + folders, enable/disable, open file location.
 7. **Settings & polish** – default start page, update speed, always on top, hide when minimized, theme; keyboard shortcuts; accessibility pass (AutomationProperties, narrator); performance tuning (target < 1% CPU at Normal speed); release build & publish profile.

@@ -9,6 +9,7 @@ namespace NeoTaskmgr.Core.Interop;
 internal static unsafe partial class Ntdll
 {
     public const int SystemProcessInformationClass = 5;
+    public const int SystemProcessorPerformanceInformationClass = 8;
     public const int ProcessCommandLineInformationClass = 60;
     public const int StatusInfoLengthMismatch = unchecked((int)0xC0000004);
 

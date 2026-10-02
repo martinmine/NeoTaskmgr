@@ -771,10 +771,70 @@
   </data>
   <data name="SettingsShortcuts.Text" xml:space="preserve">
     <value>Ctrl+F: Search
-Ctrl+1 to Ctrl+6: Processes, Performance, App history, Startup apps, Details, Services
+Ctrl+1 to Ctrl+7: Processes, Performance, App history, Startup apps, Users, Details, Services
 F5: Refresh now (also when paused)
 Delete: End task
-Right / Left: Expand / collapse an app on the Processes page
+Right / Left: Expand / collapse an app on the Processes page, or a user on the Users page
 Shift+F10 or the Menu key: Open the context menu</value>
+  </data>
+  <data name="NavUsers.Content" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="UsersPageTitle.Text" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="StartPageUsers.Content" xml:space="preserve">
+    <value>Users</value>
+  </data>
+  <data name="ColumnUser" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="ColumnId" xml:space="preserve">
+    <value>ID</value>
+  </data>
+  <data name="ColumnSession" xml:space="preserve">
+    <value>Session</value>
+  </data>
+  <data name="ColumnClientName" xml:space="preserve">
+    <value>Client name</value>
+  </data>
+  <data name="StatusDisconnected" xml:space="preserve">
+    <value>Disconnected</value>
+  </data>
+  <data name="DisconnectButton.Label" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="ManageUserAccountsButton.Label" xml:space="preserve">
+    <value>Manage user accounts</value>
+  </data>
+  <data name="SignOutButton.Label" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="DisconnectMenuItem.Text" xml:space="preserve">
+    <value>Disconnect</value>
+  </data>
+  <data name="SignOutMenuItem.Text" xml:space="preserve">
+    <value>Sign out</value>
+  </data>
+  <data name="ManageUserAccountsMenuItem.Text" xml:space="preserve">
+    <value>Manage user accounts</value>
+  </data>
+  <data name="DisconnectConfirmTitle" xml:space="preserve">
+    <value>Disconnect {0}?</value>
+  </data>
+  <data name="DisconnectConfirmMessage" xml:space="preserve">
+    <value>The user's apps keep running, and they can sign in again to continue where they left off.</value>
+  </data>
+  <data name="DisconnectConfirmButton" xml:space="preserve">
+    <value>Disconnect user</value>
+  </data>
+  <data name="SignOutConfirmTitle" xml:space="preserve">
+    <value>Sign out {0}?</value>
+  </data>
+  <data name="SignOutConfirmMessage" xml:space="preserve">
+    <value>The user's apps will be closed, and unsaved data will be lost.</value>
+  </data>
+  <data name="SignOutConfirmButton" xml:space="preserve">
+    <value>Sign out user</value>
   </data>
 </root>

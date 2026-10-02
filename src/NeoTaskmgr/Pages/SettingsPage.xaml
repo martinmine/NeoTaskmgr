@@ -51,6 +51,7 @@
                     <ComboBoxItem x:Uid="StartPagePerformance" />
                     <ComboBoxItem x:Uid="StartPageAppHistory" />
                     <ComboBoxItem x:Uid="StartPageStartupApps" />
+                    <ComboBoxItem x:Uid="StartPageUsers" />
                     <ComboBoxItem x:Uid="StartPageDetails" />
                     <ComboBoxItem x:Uid="StartPageServices" />
                 </ComboBox>

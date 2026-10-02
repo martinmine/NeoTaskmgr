@@ -6,7 +6,7 @@ using Windows.Storage.FileProperties;
 namespace NeoTaskmgr;
 
 /// <summary>
-/// Icons of executables, loaded once per path via the shell's thumbnails, and logos of packaged apps. For use from
+/// Icons of executables, loaded once per path via the shell's thumbnails, logos of packaged apps, and pictures. For use from
 /// x:Bind on the UI thread.
 /// </summary>
 public static class IconCache
@@ -49,6 +49,40 @@ public static class IconCache
         }
 
         return icon;
+    }
+
+    /// <summary>An image file shown as is, such as an account picture; it appears once loaded. Null when there is no path.</summary>
+    public static ImageSource? GetPicture(string? path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            return null;
+        }
+
+        var key = "picture:" + path;
+        if (!Icons.TryGetValue(key, out var picture))
+        {
+            picture = new BitmapImage { DecodePixelWidth = (int)IconSize };
+            Icons[key] = picture;
+            _ = LoadPictureAsync(picture, path);
+        }
+
+        return picture;
+    }
+
+    private static async Task LoadPictureAsync(BitmapImage picture, string path)
+    {
+        try
+        {
+            // Read directly: account pictures are hidden system files, which the shell's StorageFile does not open.
+            var bytes = await File.ReadAllBytesAsync(path);
+            using var stream = new MemoryStream(bytes);
+            await picture.SetSourceAsync(stream.AsRandomAccessStream());
+        }
+        catch (Exception)
+        {
+            // As for icons: a picture that cannot be read is cosmetic.
+        }
     }
 
     private static async Task LoadPackageLogoAsync(BitmapImage icon, string familyName)

@@ -10,12 +10,12 @@ A modern C# / WinUI 3 re-implementation of Windows Task Manager.
 | Performance | Yes | CPU, Memory, Disk(s), Ethernet/Wi‑Fi, GPU(s) with live graphs |
 | App history | Yes | CPU time, network and notifications per app over the last 30 days, from SRUM |
 | Startup apps | Yes | Registry Run keys + Startup folders, enable/disable |
-| Users | **No** | Out of scope |
+| Users | Yes | Signed-in users with the total usage of their processes, expandable to the processes; disconnect, sign out |
 | Details | Yes | Flat process list, column picker, priority/affinity, dump file |
 | Services | Yes | List, start/stop/restart, go to process |
 | Settings | Yes | Start page, update speed, always on top, theme |
 
-Explicitly not planned for v1: "Startup impact" (Windows computes this from internal diagnostics data), the "Users" view's session management, NPU graphs (can be added later on the same pattern as GPU).
+Explicitly not planned for v1: "Startup impact" (Windows computes this from internal diagnostics data), the Users page's "Connect" and "Send message", NPU graphs (can be added later on the same pattern as GPU).
 
 ## 2. Guiding principles
 
@@ -125,6 +125,12 @@ UI: left list of mini-graphs (like Task Manager) + detail panel with a large gra
 - Enabled/disabled state: `...\Explorer\StartupApproved\Run|Run32|StartupFolder` binary values (byte 0: `02` = enabled, `03` = disabled + FILETIME). Enable/disable writes these values, exactly like Task Manager.
 - Columns: Name, Publisher, Status, Location; "Startup impact" shown as "Not measured".
 
+### Users
+- Sessions: `WTSEnumerateSessionsEx` (user, domain, state, window station) and `WTSQuerySessionInformation(WTSClientName)`; active and disconnected sessions with a user are shown.
+- Name: a Microsoft account's e-mail address, else the full name (`NetUserGetInfo` levels 24 and 10, local accounts only), else the account name. Picture from `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\AccountPicture\Users\<SID>`.
+- Processes: those running in the session as the session's user (token user), so a user's totals match their expanded list. Without elevation only the current user's processes can be attributed.
+- Actions: Disconnect (`WTSDisconnectSession`), Sign out (`WTSLogoffSession`), Manage user accounts (`ms-settings:otherusers`); End task, Go to details and the file actions for processes.
+
 ### Services
 - `OpenSCManager` + `EnumServicesStatusEx` (name, display name, status, PID), `QueryServiceConfig2` (description), service group from registry. (`ServiceController` is a separate NuGet package in modern .NET, so plain P/Invoke is used – see §8.)
 - Actions: Start, Stop, Restart, Open Services (`services.msc`), Search online, Go to details (select PID on Details page).
@@ -132,13 +138,13 @@ UI: left list of mini-graphs (like Task Manager) + detail panel with a large gra
 ## 6. UI design
 
 - **Shell**: `MainWindow` with Mica backdrop, custom title bar (`ExtendsContentIntoTitleBar`) containing app icon, title and a global **search box** (filters the current page) – matches Windows 11 Task Manager.
-- **Navigation**: `NavigationView` (left, compact) → Processes, Performance, App history, Startup apps, Details, Services; Settings in footer. Each page has a `CommandBar` with context actions (Run new task, End task, Efficiency mode, …).
+- **Navigation**: `NavigationView` (left, compact) → Processes, Performance, App history, Startup apps, Users, Details, Services; Settings in footer. Each page has a `CommandBar` with context actions (Run new task, End task, Efficiency mode, …).
 - **Tables**: WinUI has no built-in DataGrid. Build one small reusable `DataTable` control: a header row (sortable, resizable `ColumnDefinition`s, right-click to pick columns) above a virtualized `ListView` whose item template uses the same column widths. Used by Processes, Details, Services and Startup.
   - Processes uses the same control over a **flattened tree** (group headers + expandable app rows with child processes) – far faster than `TreeView` for hundreds of rows.
   - Heat-map cell background (faint → strong shade of the user's accent color) via a value converter on usage %.
 - **Graphs**: `PerformanceGraph` control – a `Canvas` with grid lines and a filled `Path` built from a ring buffer of the last 60 samples. No charting library needed.
 - **Context menus**: `MenuFlyout` on rows mirroring Task Manager's menus.
-- **Keyboard**: Delete = End task, Ctrl+F = search, F5 = refresh now, Ctrl+1..6 = switch pages.
+- **Keyboard**: Delete = End task, Ctrl+F = search, F5 = refresh now, Ctrl+1..7 = switch pages.
 - Light/Dark/High-contrast via `ThemeResource` only; strings in `Resources.resw` from day one (localizable).
 
 ## 7. Milestones

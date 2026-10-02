@@ -32,6 +32,7 @@ public partial class App : Application
             new PerformanceViewModel(runner),
             new AppHistoryViewModel(new AppHistoryProvider(), settings, runner),
             new StartupAppsViewModel(StartupProvider.CreateDefault(), runner),
+            new UsersViewModel(runner),
             new DetailsViewModel(runner),
             new ServicesViewModel(runner),
             sampler.RefreshNow);

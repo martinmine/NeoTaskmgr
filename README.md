@@ -1,7 +1,7 @@
 # NeoTaskmgr
 
 A modern C# / WinUI 3 re-implementation of Windows Task Manager: Processes, Performance, App history, Startup apps,
-Details and Services. See [docs/PLAN.md](docs/PLAN.md) for scope, architecture and decisions.
+Users, Details and Services. See [docs/PLAN.md](docs/PLAN.md) for scope, architecture and decisions.
 
 ## Requirements
 
@@ -36,10 +36,10 @@ Windows App SDK; start `NeoTaskmgr.exe`.
 | Keys | Action |
 |---|---|
 | Ctrl+F | Search |
-| Ctrl+1 … Ctrl+6 | Processes, Performance, App history, Startup apps, Details, Services |
+| Ctrl+1 … Ctrl+7 | Processes, Performance, App history, Startup apps, Users, Details, Services |
 | F5 | Refresh now (also when updates are paused) |
 | Delete | End task |
-| Right / Left | Expand / collapse an app on the Processes page |
+| Right / Left | Expand / collapse an app on the Processes page, or a user on the Users page |
 | Shift+F10, Menu key | Context menu of the selected row |
 
 ## Requires administrator rights
@@ -51,6 +51,7 @@ Without them, NeoTaskmgr shows a banner and these features are unavailable or li
 - Starting and stopping services
 - Enabling or disabling startup apps for all users
 - App history of the system accounts (without it, only the current user's usage is shown)
+- Other users' usage on the Users page, and disconnecting or signing out other users
 
 ## Known limitations
 

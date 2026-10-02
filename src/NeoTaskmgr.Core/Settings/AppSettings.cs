@@ -7,6 +7,7 @@ public enum AppPage
     Performance,
     AppHistory,
     StartupApps,
+    Users,
     Details,
     Services,
 }

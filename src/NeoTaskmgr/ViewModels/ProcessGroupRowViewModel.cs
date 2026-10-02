@@ -9,14 +9,14 @@ namespace NeoTaskmgr.ViewModels;
 /// A row of the Processes page: an app with its processes (shown with totals), or a single process.
 /// Child rows show one process of an expanded app.
 /// </summary>
-public sealed class ProcessGroupRowViewModel : ObservableObject
+public sealed class ProcessGroupRowViewModel : ObservableObject, IUsageRow
 {
-    // The usage at which the heat map shading is at its darkest.
-    private const double HotCpuPercent = 25;
-    private const double HotMemoryFraction = 0.1;
-    private const double HotDiskBytesPerSecond = 10 * 1024 * 1024;
-    private const double HotNetworkBytesPerSecond = 1024 * 1024;
-    private const double HotGpuPercent = 25;
+    // The usage at which the heat map shading is at its darkest; also used for the users of the Users page.
+    internal const double HotCpuPercent = 25;
+    internal const double HotMemoryFraction = 0.1;
+    internal const double HotDiskBytesPerSecond = 10 * 1024 * 1024;
+    internal const double HotNetworkBytesPerSecond = 1024 * 1024;
+    internal const double HotGpuPercent = 25;
 
     private bool _isExpanded;
     private long _totalMemory = 1;

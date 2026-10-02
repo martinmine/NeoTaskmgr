@@ -27,6 +27,7 @@ public sealed partial class MainWindow : Window
         [AppPage.Performance] = typeof(PerformancePage),
         [AppPage.AppHistory] = typeof(AppHistoryPage),
         [AppPage.StartupApps] = typeof(StartupAppsPage),
+        [AppPage.Users] = typeof(UsersPage),
         [AppPage.Details] = typeof(DetailsPage),
         [AppPage.Services] = typeof(ServicesPage),
     };
@@ -65,6 +66,7 @@ public sealed partial class MainWindow : Window
         viewModel.Processes.GoToServicesRequested += GoToServices;
         viewModel.Details.GoToServicesRequested += GoToServices;
         viewModel.Services.GoToDetailsRequested += GoToDetails;
+        viewModel.Users.GoToDetailsRequested += GoToDetails;
         viewModel.Processes.SwitchedToApp += MinimizeOnUse;
 
         ApplyTheme();
@@ -147,7 +149,7 @@ public sealed partial class MainWindow : Window
         args.Handled = true;
     }
 
-    /// <summary>Ctrl+1 to Ctrl+6 open the pages in navigation order.</summary>
+    /// <summary>Ctrl+1 to Ctrl+7 open the pages in navigation order.</summary>
     private void GoToPage_Invoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         Navigate((AppPage)(sender.Key - VirtualKey.Number1));
@@ -181,6 +183,7 @@ public sealed partial class MainWindow : Window
         AppPage.Performance => _viewModel.Performance,
         AppPage.AppHistory => _viewModel.AppHistory,
         AppPage.StartupApps => _viewModel.StartupApps,
+        AppPage.Users => _viewModel.Users,
         AppPage.Details => _viewModel.Details,
         AppPage.Services => _viewModel.Services,
         _ => null,

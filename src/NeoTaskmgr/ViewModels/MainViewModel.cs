@@ -15,6 +15,7 @@ public sealed class MainViewModel
         PerformanceViewModel performance,
         AppHistoryViewModel appHistory,
         StartupAppsViewModel startupApps,
+        UsersViewModel users,
         DetailsViewModel details,
         ServicesViewModel services,
         Action refreshNow)
@@ -24,6 +25,7 @@ public sealed class MainViewModel
         Performance = performance;
         AppHistory = appHistory;
         StartupApps = startupApps;
+        Users = users;
         Details = details;
         Services = services;
         RefreshCommand = new RelayCommand(refreshNow);
@@ -47,19 +49,22 @@ public sealed class MainViewModel
     /// <summary>Not updated by snapshots; the page reloads it when shown.</summary>
     public StartupAppsViewModel StartupApps { get; }
 
+    public UsersViewModel Users { get; }
+
     public DetailsViewModel Details { get; }
     public ServicesViewModel Services { get; }
 
     /// <summary>Samples now, also when updates are paused.</summary>
     public RelayCommand RefreshCommand { get; }
 
-    private IEnumerable<TableColumns> Tables => [Processes.Columns, AppHistory.Columns, StartupApps.Columns, Details.Columns, Services.Columns];
+    private IEnumerable<TableColumns> Tables => [Processes.Columns, AppHistory.Columns, StartupApps.Columns, Users.Columns, Details.Columns, Services.Columns];
 
     /// <summary>Updates all pages from a new snapshot. Must be called on the UI thread.</summary>
     public void Apply(SystemSnapshot snapshot)
     {
         Processes.Apply(snapshot);
         Performance.Apply(snapshot);
+        Users.Apply(snapshot);
         Details.Apply(snapshot);
         Services.Apply(snapshot.Services);
     }

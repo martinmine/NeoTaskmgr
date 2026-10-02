@@ -95,3 +95,15 @@ SERVICE_CONTROL_STOP
 
 // App history
 QueryDosDevice
+
+// Users
+WTSEnumerateSessionsEx
+WTSFreeMemoryEx
+WTSQuerySessionInformation
+WTSFreeMemory
+WTSDisconnectSession
+WTSLogoffSession
+NetUserGetInfo
+NetApiBufferFree
+USER_INFO_10
+USER_INFO_24

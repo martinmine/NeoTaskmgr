@@ -39,6 +39,10 @@
                 Key="Number6"
                 Invoked="GoToPage_Invoked"
                 Modifiers="Control" />
+            <KeyboardAccelerator
+                Key="Number7"
+                Invoked="GoToPage_Invoked"
+                Modifiers="Control" />
         </Grid.KeyboardAccelerators>
         <Grid.RowDefinitions>
             <RowDefinition Height="48" />
@@ -124,6 +128,11 @@
                 <NavigationViewItem x:Uid="NavStartupApps" Tag="StartupApps">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE7E8;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Uid="NavUsers" Tag="Users">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE716;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
                 <NavigationViewItem x:Uid="NavDetails" Tag="Details">

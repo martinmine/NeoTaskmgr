@@ -136,7 +136,7 @@ public sealed class ProcessesViewModel : ObservableObject
         var performance = snapshot.Performance;
         var totalMemory = performance.Memory.TotalPhysical;
         _servicesByPid = snapshot.Services.Where(s => s.Pid != 0).ToLookup(s => s.Pid);
-        UpdateSummaries(performance);
+        UpdateSummaries(performance, _cpuColumn, _memoryColumn, _diskColumn, _networkColumn, _gpuColumn);
 
         // Rebuilding the dictionaries drops rows of exited processes; existing rows are reused to keep their state.
         var groupRows = new Dictionary<ProcessKey, ProcessGroupRowViewModel>();
@@ -144,7 +144,7 @@ public sealed class ProcessesViewModel : ObservableObject
         foreach (var group in ProcessGrouper.Group(processes, WindowsDirectory))
         {
             var row = _groupRows.GetValueOrDefault(group.Root.Key) ?? new ProcessGroupRowViewModel(isChild: false, ToggleExpanded);
-            row.Update(group.Processes, group.Category, totalMemory, GetServiceHostName(group.Root));
+            row.Update(group.Processes, group.Category, totalMemory, GetServiceHostName(group.Root, _servicesByPid));
             groupRows[group.Root.Key] = row;
 
             if (group.Processes.Count > 1)
@@ -152,7 +152,7 @@ public sealed class ProcessesViewModel : ObservableObject
                 foreach (var process in group.Processes)
                 {
                     var child = _childRows.GetValueOrDefault(process.Key) ?? new ProcessGroupRowViewModel(isChild: true, ToggleExpanded);
-                    child.Update([process], group.Category, totalMemory, GetServiceHostName(process));
+                    child.Update([process], group.Category, totalMemory, GetServiceHostName(process, _servicesByPid));
                     childRows[process.Key] = child;
                 }
             }
@@ -167,9 +167,9 @@ public sealed class ProcessesViewModel : ObservableObject
     /// Names a service host process after its service ("Service Host: Windows Audio"), or after its group when it
     /// hosts several; null for other processes.
     /// </summary>
-    private string? GetServiceHostName(ProcessInfo process)
+    public static string? GetServiceHostName(ProcessInfo process, ILookup<int, ServiceInfo> servicesByPid)
     {
-        var services = _servicesByPid[process.Counters.Pid].ToList();
+        var services = servicesByPid[process.Counters.Pid].ToList();
         if (services.Count == 0 || !process.Counters.Name.Equals("svchost.exe", StringComparison.OrdinalIgnoreCase))
         {
             return null;
@@ -180,15 +180,16 @@ public sealed class ProcessesViewModel : ObservableObject
     }
 
     /// <summary>Shows system-wide totals above the columns, like Task Manager.</summary>
-    private void UpdateSummaries(PerformanceSnapshot performance)
+    internal static void UpdateSummaries(
+        PerformanceSnapshot performance, TableColumn cpuColumn, TableColumn memoryColumn, TableColumn diskColumn, TableColumn networkColumn, TableColumn gpuColumn)
     {
-        _cpuColumn.Summary = Format.WholePercent(performance.Cpu.UsagePercent);
-        _memoryColumn.Summary = Format.WholePercent(performance.Memory.UsedPercent);
-        _diskColumn.Summary = Format.WholePercent(performance.Disks.Select(d => d.ActivePercent).DefaultIfEmpty().Max());
+        cpuColumn.Summary = Format.WholePercent(performance.Cpu.UsagePercent);
+        memoryColumn.Summary = Format.WholePercent(performance.Memory.UsedPercent);
+        diskColumn.Summary = Format.WholePercent(performance.Disks.Select(d => d.ActivePercent).DefaultIfEmpty().Max());
         var linkSpeed = performance.NetworkAdapters.Sum(a => (double)a.LinkSpeedBitsPerSecond);
         var throughput = performance.NetworkAdapters.Sum(a => a.SendBitsPerSecond + a.ReceiveBitsPerSecond);
-        _networkColumn.Summary = Format.WholePercent(linkSpeed > 0 ? 100 * throughput / linkSpeed : 0);
-        _gpuColumn.Summary = Format.WholePercent(performance.Gpus.Select(g => g.UtilizationPercent).DefaultIfEmpty().Max());
+        networkColumn.Summary = Format.WholePercent(linkSpeed > 0 ? 100 * throughput / linkSpeed : 0);
+        gpuColumn.Summary = Format.WholePercent(performance.Gpus.Select(g => g.UtilizationPercent).DefaultIfEmpty().Max());
     }
 
     public void ApplySearch(string text)

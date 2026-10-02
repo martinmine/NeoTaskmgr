@@ -13,6 +13,7 @@ using NeoTaskmgr.Services;
 using NeoTaskmgr.ViewModels;
 using Windows.Graphics;
 using Windows.System;
+using Windows.UI.ViewManagement;
 using WinRT.Interop;
 
 namespace NeoTaskmgr;
@@ -36,6 +37,9 @@ public sealed partial class MainWindow : Window
     private readonly SettingsViewModel _settings;
     private readonly DialogService _dialogs;
     private readonly bool _isPlacementRestored;
+
+    // Kept alive for its ColorValuesChanged event.
+    private readonly UISettings _uiSettings = new();
 
     // The last bounds while not maximized or minimized, saved so the window reopens at that size.
     private RectInt32 _restoredBounds;
@@ -64,8 +68,10 @@ public sealed partial class MainWindow : Window
         ApplyTheme();
         ApplyAlwaysOnTop();
         _settings.PropertyChanged += Settings_PropertyChanged;
-        HeatMap.UpdateHighContrast();
-        RootGrid.ActualThemeChanged += (_, _) => HeatMap.UpdateHighContrast();
+        UpdateHeatMap();
+        RootGrid.ActualThemeChanged += (_, _) => UpdateHeatMap();
+        // Raised off the UI thread when the accent color changes.
+        _uiSettings.ColorValuesChanged += (_, _) => DispatcherQueue.TryEnqueue(UpdateHeatMap);
 
         _isPlacementRestored = RestorePlacement();
         AppWindow.Changed += AppWindow_Changed;
@@ -228,6 +234,8 @@ public sealed partial class MainWindow : Window
             _ => TitleBarTheme.UseDefaultAppMode,
         };
     }
+
+    private void UpdateHeatMap() => HeatMap.Update(_uiSettings, RootGrid.ActualTheme);
 
     private void ApplyAlwaysOnTop() => Presenter.IsAlwaysOnTop = _settings.Current.AlwaysOnTop;
 }

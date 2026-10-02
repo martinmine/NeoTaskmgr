@@ -128,7 +128,7 @@ UI: left list of mini-graphs (like Task Manager) + detail panel with a large gra
 - **Navigation**: `NavigationView` (left, compact) → Processes, Performance, Startup apps, Details, Services; Settings in footer. Each page has a `CommandBar` with context actions (Run new task, End task, Efficiency mode, …).
 - **Tables**: WinUI has no built-in DataGrid. Build one small reusable `DataTable` control: a header row (sortable, resizable `ColumnDefinition`s, right-click to pick columns) above a virtualized `ListView` whose item template uses the same column widths. Used by Processes, Details, Services and Startup.
   - Processes uses the same control over a **flattened tree** (group headers + expandable app rows with child processes) – far faster than `TreeView` for hundreds of rows.
-  - Heat-map cell background (light yellow → orange) via a value converter on usage %.
+  - Heat-map cell background (faint → strong shade of the user's accent color) via a value converter on usage %.
 - **Graphs**: `PerformanceGraph` control – a `Canvas` with grid lines and a filled `Path` built from a ring buffer of the last 60 samples. No charting library needed.
 - **Context menus**: `MenuFlyout` on rows mirroring Task Manager's menus.
 - **Keyboard**: Delete = End task, Ctrl+F = search, F5 = refresh now, Ctrl+1..6 = switch pages.

@@ -42,6 +42,9 @@
   <data name="ProcessesPageTitle.Text" xml:space="preserve">
     <value>Processes</value>
   </data>
+  <data name="PerformancePageTitle.Text" xml:space="preserve">
+    <value>Performance</value>
+  </data>
   <data name="StartupAppsPageTitle.Text" xml:space="preserve">
     <value>Startup apps</value>
   </data>

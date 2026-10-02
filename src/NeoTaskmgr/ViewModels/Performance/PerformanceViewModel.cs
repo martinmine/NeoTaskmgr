@@ -12,7 +12,14 @@ public sealed class PerformanceViewModel : ObservableObject
     private Dictionary<string, PerformanceDeviceViewModel> _devices = [];
     private PerformanceDeviceViewModel? _selectedDevice;
 
+    public PerformanceViewModel(ProcessCommandRunner runner)
+    {
+        RunNewTaskCommand = new RelayCommand(() => _ = runner.RunNewTaskAsync());
+    }
+
     public ObservableCollection<PerformanceDeviceViewModel> Devices { get; } = [];
+
+    public RelayCommand RunNewTaskCommand { get; }
 
     public PerformanceDeviceViewModel? SelectedDevice
     {

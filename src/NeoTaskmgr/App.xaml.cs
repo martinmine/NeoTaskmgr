@@ -28,7 +28,7 @@ public partial class App : Application
         var viewModel = new MainViewModel(
             settings,
             new ProcessesViewModel(runner),
-            new PerformanceViewModel(),
+            new PerformanceViewModel(runner),
             new StartupAppsViewModel(StartupProvider.CreateDefault(), runner),
             new DetailsViewModel(runner),
             new ServicesViewModel(runner),

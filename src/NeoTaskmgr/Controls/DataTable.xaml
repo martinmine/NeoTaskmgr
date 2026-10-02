@@ -18,10 +18,14 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
+            <!--
+                Shifted left by half the row cell spacing, so each header straddles the gaps between columns like the
+                shaded cells do, and its titles (padded by the other half) line up with the row content.
+            -->
             <local:TableRowPanel
                 x:Name="HeaderPanel"
                 MinHeight="36"
-                Margin="16,0,4,0"
+                Margin="10,0,4,0"
                 HorizontalAlignment="Left"
                 Background="Transparent"
                 CellSpacing="0"

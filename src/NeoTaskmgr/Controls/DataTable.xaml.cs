@@ -100,7 +100,7 @@ public sealed partial class DataTable : UserControl
         {
             foreach (var column in columns)
             {
-                var cell = new HeaderCell(column, () => Columns?.Sort(column));
+                var cell = new HeaderCell(column, isFirst: _headerCells.Count == 0, () => Columns?.Sort(column));
                 _headerCells[column] = cell;
                 HeaderPanel.Children.Add(cell.Root);
             }
@@ -216,14 +216,20 @@ public sealed partial class DataTable : UserControl
             FontSize = 8,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Top,
-            Margin = new Thickness(0, 2, 12, 0),
             IsHitTestVisible = false,
             Visibility = Visibility.Collapsed,
         };
 
-        public HeaderCell(TableColumn column, Action sort)
+        /// <summary>Half the row cell spacing: the padding on each side of a title.</summary>
+        private const double HalfSpacing = 6;
+
+        public HeaderCell(TableColumn column, bool isFirst, Action sort)
         {
             _column = column;
+
+            // The first header also reaches left to the edge of the row highlight, keeping its title in place.
+            var leading = isFirst ? 2 * HalfSpacing : HalfSpacing;
+            _sortIcon.Margin = new Thickness(leading, 2, HalfSpacing, 0);
             _summary = new TextBlock
             {
                 Style = (Style)Application.Current.Resources["BodyStrongTextBlockStyle"],
@@ -240,7 +246,7 @@ public sealed partial class DataTable : UserControl
                 VerticalAlignment = VerticalAlignment.Stretch,
                 HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 VerticalContentAlignment = VerticalAlignment.Bottom,
-                Padding = new Thickness(0, 4, 12, 6),
+                Padding = new Thickness(leading, 4, HalfSpacing, 6),
                 Background = null,
                 BorderThickness = new Thickness(0),
                 CornerRadius = new CornerRadius(0),
@@ -249,7 +255,11 @@ public sealed partial class DataTable : UserControl
             AutomationProperties.SetName(button, column.Header);
             button.Click += (_, _) => sort();
 
-            Root = new Grid { Children = { button, _sortIcon, new ColumnGripper(column) } };
+            Root = new Grid
+            {
+                Margin = new Thickness(isFirst ? -HalfSpacing : 0, 0, 0, 0),
+                Children = { button, _sortIcon, new ColumnGripper(column) },
+            };
         }
 
         public Grid Root { get; }

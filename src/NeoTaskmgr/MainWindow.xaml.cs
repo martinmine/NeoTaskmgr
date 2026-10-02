@@ -6,6 +6,7 @@ using Microsoft.UI.Xaml.Media.Animation;
 using NeoTaskmgr.Core;
 using NeoTaskmgr.Core.Settings;
 using NeoTaskmgr.Pages;
+using NeoTaskmgr.Services;
 using NeoTaskmgr.ViewModels;
 using Windows.Graphics;
 
@@ -26,11 +27,15 @@ public sealed partial class MainWindow : Window
     private const int DefaultWidth = 1100;
     private const int DefaultHeight = 760;
 
+    private readonly MainViewModel _viewModel;
     private readonly SettingsViewModel _settings;
+    private readonly DialogService _dialogs;
 
-    public MainWindow(SettingsViewModel settings)
+    public MainWindow(MainViewModel viewModel, DialogService dialogs)
     {
-        _settings = settings;
+        _viewModel = viewModel;
+        _settings = viewModel.Settings;
+        _dialogs = dialogs;
         InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
@@ -47,6 +52,7 @@ public sealed partial class MainWindow : Window
 
     private void RootGrid_Loaded(object sender, RoutedEventArgs e)
     {
+        _dialogs.XamlRoot = RootGrid.XamlRoot;
         var scale = RootGrid.XamlRoot.RasterizationScale;
         AppWindow.Resize(new SizeInt32((int)(DefaultWidth * scale), (int)(DefaultHeight * scale)));
     }
@@ -66,11 +72,18 @@ public sealed partial class MainWindow : Window
         }
         else if (args.SelectedItem is NavigationViewItem { Tag: string tag })
         {
-            NavFrame.Navigate(PageTypes[Enum.Parse<AppPage>(tag)], null, transition);
+            var page = Enum.Parse<AppPage>(tag);
+            NavFrame.Navigate(PageTypes[page], GetPageViewModel(page), transition);
         }
 
         (NavFrame.Content as ISearchablePage)?.ApplySearch(SearchBox.Text);
     }
+
+    private object? GetPageViewModel(AppPage page) => page switch
+    {
+        AppPage.Details => _viewModel.Details,
+        _ => null,
+    };
 
     private void AppTitleBar_PaneToggleRequested(TitleBar sender, object args) => NavView.IsPaneOpen = !NavView.IsPaneOpen;
 

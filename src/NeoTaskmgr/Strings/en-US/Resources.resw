@@ -129,4 +129,175 @@
   <data name="SettingsAlwaysOnTopToggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Always on top</value>
   </data>
+  <data name="ColumnName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="ColumnPid" xml:space="preserve">
+    <value>PID</value>
+  </data>
+  <data name="ColumnStatus" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="ColumnUserName" xml:space="preserve">
+    <value>User name</value>
+  </data>
+  <data name="ColumnSessionId" xml:space="preserve">
+    <value>Session ID</value>
+  </data>
+  <data name="ColumnCpu" xml:space="preserve">
+    <value>CPU</value>
+  </data>
+  <data name="ColumnCpuTime" xml:space="preserve">
+    <value>CPU time</value>
+  </data>
+  <data name="ColumnMemory" xml:space="preserve">
+    <value>Memory (private working set)</value>
+  </data>
+  <data name="ColumnWorkingSet" xml:space="preserve">
+    <value>Working set</value>
+  </data>
+  <data name="ColumnPeakWorkingSet" xml:space="preserve">
+    <value>Peak working set</value>
+  </data>
+  <data name="ColumnCommitSize" xml:space="preserve">
+    <value>Commit size</value>
+  </data>
+  <data name="ColumnHandles" xml:space="preserve">
+    <value>Handles</value>
+  </data>
+  <data name="ColumnThreads" xml:space="preserve">
+    <value>Threads</value>
+  </data>
+  <data name="ColumnBasePriority" xml:space="preserve">
+    <value>Base priority</value>
+  </data>
+  <data name="ColumnArchitecture" xml:space="preserve">
+    <value>Architecture</value>
+  </data>
+  <data name="ColumnElevated" xml:space="preserve">
+    <value>Elevated</value>
+  </data>
+  <data name="ColumnDescription" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="ColumnImagePath" xml:space="preserve">
+    <value>Image path name</value>
+  </data>
+  <data name="ColumnCommandLine" xml:space="preserve">
+    <value>Command line</value>
+  </data>
+  <data name="StatusRunning" xml:space="preserve">
+    <value>Running</value>
+  </data>
+  <data name="StatusSuspended" xml:space="preserve">
+    <value>Suspended</value>
+  </data>
+  <data name="PriorityRealTime" xml:space="preserve">
+    <value>Realtime</value>
+  </data>
+  <data name="PriorityHigh" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="PriorityAboveNormal" xml:space="preserve">
+    <value>Above normal</value>
+  </data>
+  <data name="PriorityNormal" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="PriorityBelowNormal" xml:space="preserve">
+    <value>Below normal</value>
+  </data>
+  <data name="PriorityIdle" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="DialogOk" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DialogCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="AffinityTitle" xml:space="preserve">
+    <value>Processor affinity</value>
+  </data>
+  <data name="AffinityMessage" xml:space="preserve">
+    <value>Which processors are allowed to run &quot;{0}&quot;?</value>
+  </data>
+  <data name="AffinityProcessor" xml:space="preserve">
+    <value>CPU {0}</value>
+  </data>
+  <data name="AffinityAllProcessors" xml:space="preserve">
+    <value>All processors</value>
+  </data>
+  <data name="EndProcessConfirmTitle" xml:space="preserve">
+    <value>End &quot;{0}&quot;?</value>
+  </data>
+  <data name="EndProcessConfirmMessage" xml:space="preserve">
+    <value>Unsaved data in this process will be lost. Ending a system process can make Windows unstable.</value>
+  </data>
+  <data name="EndProcessConfirmButton" xml:space="preserve">
+    <value>End process</value>
+  </data>
+  <data name="EndProcessTreeConfirmTitle" xml:space="preserve">
+    <value>End &quot;{0}&quot; and all processes it started?</value>
+  </data>
+  <data name="EndProcessTreeConfirmMessage" xml:space="preserve">
+    <value>Unsaved data in these processes will be lost. Ending system processes can make Windows unstable.</value>
+  </data>
+  <data name="EndProcessTreeConfirmButton" xml:space="preserve">
+    <value>End process tree</value>
+  </data>
+  <data name="PriorityConfirmTitle" xml:space="preserve">
+    <value>Change the priority of &quot;{0}&quot;?</value>
+  </data>
+  <data name="PriorityConfirmMessage" xml:space="preserve">
+    <value>Changing the priority of some processes can make the system slow or unstable.</value>
+  </data>
+  <data name="PriorityConfirmButton" xml:space="preserve">
+    <value>Change priority</value>
+  </data>
+  <data name="ActionFailedTitle" xml:space="preserve">
+    <value>Unable to complete the operation</value>
+  </data>
+  <data name="EndTaskButton.Label" xml:space="preserve">
+    <value>End task</value>
+  </data>
+  <data name="EndTaskMenuItem.Text" xml:space="preserve">
+    <value>End task</value>
+  </data>
+  <data name="EndProcessTreeMenuItem.Text" xml:space="preserve">
+    <value>End process tree</value>
+  </data>
+  <data name="SetPriorityMenuItem.Text" xml:space="preserve">
+    <value>Set priority</value>
+  </data>
+  <data name="PriorityRealTimeMenuItem.Text" xml:space="preserve">
+    <value>Realtime</value>
+  </data>
+  <data name="PriorityHighMenuItem.Text" xml:space="preserve">
+    <value>High</value>
+  </data>
+  <data name="PriorityAboveNormalMenuItem.Text" xml:space="preserve">
+    <value>Above normal</value>
+  </data>
+  <data name="PriorityNormalMenuItem.Text" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="PriorityBelowNormalMenuItem.Text" xml:space="preserve">
+    <value>Below normal</value>
+  </data>
+  <data name="PriorityIdleMenuItem.Text" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="SetAffinityMenuItem.Text" xml:space="preserve">
+    <value>Set affinity</value>
+  </data>
+  <data name="OpenFileLocationMenuItem.Text" xml:space="preserve">
+    <value>Open file location</value>
+  </data>
 </root>

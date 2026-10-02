@@ -110,7 +110,7 @@ Actions: End task (`WM_CLOSE` for apps, then `Process.Kill`), End process tree (
 | Ethernet / Wi‑Fi | `System.Net.NetworkInformation.NetworkInterface` (BCL) – name, type, speed, IPv4/IPv6, byte counters → send/receive rate |
 | GPU | DXGI adapter enumeration (`CreateDXGIFactory1`, COM interop) for name/dedicated/shared memory; PDH `\GPU Engine(*)\Utilization Percentage` per engine type (3D, Copy, Video Encode/Decode), `\GPU Adapter Memory(*)` for usage |
 
-UI: left list of mini-graphs (like Task Manager) + detail panel with a large graph and stat grid. CPU view can toggle "Overall utilization" vs "Logical processors" (`ItemsRepeater` + `UniformGridLayout` of small graphs).
+UI: left list of mini-graphs (like Task Manager) + detail panel with a large graph and stat grid. CPU view can switch between "Overall utilization" and "Logical processors" via the graph's right-click "Change graph to" menu (`ItemsRepeater` + `UniformGridLayout` of small graphs).
 
 ### Startup apps
 - Registry: `HKCU`/`HKLM` `Software\Microsoft\Windows\CurrentVersion\Run` (+ `WOW6432Node`), via `Microsoft.Win32.Registry` (BCL).

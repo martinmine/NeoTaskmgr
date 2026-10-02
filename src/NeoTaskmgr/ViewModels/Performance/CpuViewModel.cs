@@ -46,8 +46,20 @@ public sealed class CpuViewModel : PerformanceDeviceViewModel
     public bool ShowLogicalProcessors
     {
         get => _showLogicalProcessors;
-        set => SetProperty(ref _showLogicalProcessors, value);
+        set
+        {
+            if (SetProperty(ref _showLogicalProcessors, value))
+            {
+                OnPropertyChanged(nameof(ShowsOverallUtilization));
+            }
+        }
     }
+
+    public bool ShowsOverallUtilization => !_showLogicalProcessors;
+
+    public void ShowOverallUtilization() => ShowLogicalProcessors = false;
+
+    public void ShowLogicalProcessorGraphs() => ShowLogicalProcessors = true;
 
     public void Update(CpuSample cpu, int processes, int threads, int handles)
     {

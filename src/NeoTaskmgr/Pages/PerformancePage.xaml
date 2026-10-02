@@ -26,34 +26,44 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBlock x:Uid="CpuUtilizationLabel" Style="{StaticResource GraphLabelStyle}" />
-                        <ToggleSwitch
-                            x:Uid="LogicalProcessorsToggle"
-                            Margin="0,-8,0,0"
-                            HorizontalAlignment="Right"
-                            IsOn="{x:Bind ShowLogicalProcessors, Mode=TwoWay}" />
-                        <controls:PerformanceGraph
-                            Grid.Row="1"
-                            Color="{x:Bind local:XamlHelpers.DeviceColor(Kind)}"
-                            Maximum="{x:Bind History.Maximum, Mode=OneWay}"
-                            Values="{x:Bind History.Values, Mode=OneWay}"
-                            Visibility="{x:Bind local:XamlHelpers.Not(ShowLogicalProcessors), Mode=OneWay}" />
-                        <ScrollViewer Grid.Row="1" Visibility="{x:Bind ShowLogicalProcessors, Mode=OneWay}">
-                            <ItemsRepeater ItemsSource="{x:Bind ProcessorHistories}">
-                                <ItemsRepeater.Layout>
-                                    <UniformGridLayout
-                                        ItemsStretch="Fill"
-                                        MinColumnSpacing="4"
-                                        MinItemHeight="64"
-                                        MinItemWidth="100"
-                                        MinRowSpacing="4" />
-                                </ItemsRepeater.Layout>
-                                <ItemsRepeater.ItemTemplate>
-                                    <DataTemplate x:DataType="perf:GraphHistory">
-                                        <controls:PerformanceGraph Color="{x:Bind local:XamlHelpers.CpuColor}" Values="{x:Bind Values, Mode=OneWay}" />
-                                    </DataTemplate>
-                                </ItemsRepeater.ItemTemplate>
-                            </ItemsRepeater>
-                        </ScrollViewer>
+                        <Grid Grid.Row="1" Background="Transparent">
+                            <Grid.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutSubItem x:Uid="ChangeGraphToMenuItem">
+                                        <RadioMenuFlyoutItem
+                                            x:Uid="OverallUtilizationMenuItem"
+                                            Click="{x:Bind ShowOverallUtilization}"
+                                            IsChecked="{x:Bind ShowsOverallUtilization, Mode=OneWay}" />
+                                        <RadioMenuFlyoutItem
+                                            x:Uid="LogicalProcessorsMenuItem"
+                                            Click="{x:Bind ShowLogicalProcessorGraphs}"
+                                            IsChecked="{x:Bind ShowLogicalProcessors, Mode=OneWay}" />
+                                    </MenuFlyoutSubItem>
+                                </MenuFlyout>
+                            </Grid.ContextFlyout>
+                            <controls:PerformanceGraph
+                                Color="{x:Bind local:XamlHelpers.DeviceColor(Kind)}"
+                                Maximum="{x:Bind History.Maximum, Mode=OneWay}"
+                                Values="{x:Bind History.Values, Mode=OneWay}"
+                                Visibility="{x:Bind local:XamlHelpers.Not(ShowLogicalProcessors), Mode=OneWay}" />
+                            <ScrollViewer Visibility="{x:Bind ShowLogicalProcessors, Mode=OneWay}">
+                                <ItemsRepeater ItemsSource="{x:Bind ProcessorHistories}">
+                                    <ItemsRepeater.Layout>
+                                        <UniformGridLayout
+                                            ItemsStretch="Fill"
+                                            MinColumnSpacing="4"
+                                            MinItemHeight="64"
+                                            MinItemWidth="100"
+                                            MinRowSpacing="4" />
+                                    </ItemsRepeater.Layout>
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate x:DataType="perf:GraphHistory">
+                                            <controls:PerformanceGraph Color="{x:Bind local:XamlHelpers.CpuColor}" Values="{x:Bind Values, Mode=OneWay}" />
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                            </ScrollViewer>
+                        </Grid>
                     </Grid>
                 </DataTemplate>
             </pages:PerformanceTemplateSelector.CpuTemplate>

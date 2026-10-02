@@ -592,14 +592,14 @@
   <data name="CpuUtilizationLabel.Text" xml:space="preserve">
     <value>% Utilization</value>
   </data>
-  <data name="LogicalProcessorsToggle.OnContent" xml:space="preserve">
-    <value>Logical processors</value>
+  <data name="ChangeGraphToMenuItem.Text" xml:space="preserve">
+    <value>Change graph to</value>
   </data>
-  <data name="LogicalProcessorsToggle.OffContent" xml:space="preserve">
-    <value>Logical processors</value>
+  <data name="OverallUtilizationMenuItem.Text" xml:space="preserve">
+    <value>Overall utilization</value>
   </data>
-  <data name="LogicalProcessorsToggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Show logical processors</value>
+  <data name="LogicalProcessorsMenuItem.Text" xml:space="preserve">
+    <value>Logical processors</value>
   </data>
   <data name="MemoryUsageLabel.Text" xml:space="preserve">
     <value>Memory usage</value>

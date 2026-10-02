@@ -14,6 +14,7 @@ public class TableColumn(string key, string header, double width, bool isNumeric
 
     public string Key { get; } = key;
     public string Header { get; } = header;
+    public double DefaultWidth { get; } = width;
 
     /// <summary>Numeric columns are right-aligned and sort descending first.</summary>
     public bool IsNumeric { get; } = isNumeric;

@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:NeoTaskmgr.Controls"
+    xmlns:local="using:NeoTaskmgr"
     xmlns:vm="using:NeoTaskmgr.ViewModels">
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="Delete" Invoked="EndTaskAccelerator_Invoked" />
@@ -72,7 +73,17 @@
             <controls:DataTable.ItemTemplate>
                 <DataTemplate x:DataType="vm:ProcessRowViewModel">
                     <controls:TableRowPanel>
-                        <TextBlock Text="{x:Bind Name, Mode=OneWay}" />
+                        <Grid VerticalAlignment="Center" ColumnSpacing="6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Image
+                                Width="16"
+                                Height="16"
+                                Source="{x:Bind local:IconCache.Get(ImagePath), Mode=OneWay}" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind Name, Mode=OneWay}" />
+                        </Grid>
                         <TextBlock HorizontalAlignment="Right" Text="{x:Bind PidText, Mode=OneWay}" />
                         <TextBlock Text="{x:Bind StatusText, Mode=OneWay}" />
                         <TextBlock Text="{x:Bind UserName, Mode=OneWay}" />

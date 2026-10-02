@@ -204,34 +204,41 @@ public sealed partial class DataTable : UserControl
     /// <summary>Makes rows at least as wide as the visible area, so the selection highlight spans the table.</summary>
     private void HorizontalScroller_SizeChanged(object sender, SizeChangedEventArgs e) => ContentGrid.MinWidth = e.NewSize.Width;
 
-    /// <summary>A column header: optional summary on top, then the title with the sort indicator. Clicking it sorts.</summary>
+    /// <summary>A column header: optional summary on top, then the title, with the sort indicator above. Clicking it sorts.</summary>
     private sealed class HeaderCell
     {
         private readonly TableColumn _column;
         private readonly TextBlock _summary;
-        private readonly FontIcon _sortIcon = new() { FontSize = 10, Visibility = Visibility.Collapsed };
+
+        // Centered above the title like Task Manager, so it takes no width from a narrow column's title.
+        private readonly FontIcon _sortIcon = new()
+        {
+            FontSize = 8,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Top,
+            Margin = new Thickness(0, 2, 12, 0),
+            IsHitTestVisible = false,
+            Visibility = Visibility.Collapsed,
+        };
 
         public HeaderCell(TableColumn column, Action sort)
         {
             _column = column;
-            var alignment = column.IsNumeric ? HorizontalAlignment.Right : HorizontalAlignment.Left;
             _summary = new TextBlock
             {
-                HorizontalAlignment = alignment,
                 Style = (Style)Application.Current.Resources["BodyStrongTextBlockStyle"],
+                TextTrimming = TextTrimming.CharacterEllipsis,
             };
 
-            var title = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, HorizontalAlignment = alignment };
-            title.Children.Add(new TextBlock { Text = column.Header, TextTrimming = TextTrimming.CharacterEllipsis });
-            // The sort indicator sits on the inner side of the title.
-            title.Children.Insert(column.IsNumeric ? 0 : 1, _sortIcon);
+            // Left-aligned even for numeric columns, so a title too long for its column keeps its first word visible.
+            var title = new TextBlock { Text = column.Header, TextTrimming = TextTrimming.CharacterEllipsis };
 
             var button = new Button
             {
                 Content = new StackPanel { Children = { _summary, title } },
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                HorizontalContentAlignment = alignment,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
                 VerticalContentAlignment = VerticalAlignment.Bottom,
                 Padding = new Thickness(0, 4, 12, 6),
                 Background = null,
@@ -242,7 +249,7 @@ public sealed partial class DataTable : UserControl
             AutomationProperties.SetName(button, column.Header);
             button.Click += (_, _) => sort();
 
-            Root = new Grid { Children = { button, new ColumnGripper(column) } };
+            Root = new Grid { Children = { button, _sortIcon, new ColumnGripper(column) } };
         }
 
         public Grid Root { get; }

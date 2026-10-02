@@ -54,7 +54,7 @@ public sealed class TableColumns : IReadOnlyList<TableColumn>
     }
 
     public TableLayout GetLayout() =>
-        new(_columns.Select(c => new ColumnLayout(c.Key, c.Width, c.IsVisible)).ToList(), SortColumn?.Key, SortDescending);
+        new(_columns.Select(c => new ColumnLayout(c.Key, c.Width == c.DefaultWidth ? null : c.Width, c.IsVisible)).ToList(), SortColumn?.Key, SortDescending);
 
     /// <summary>Restores a saved layout. Columns that no longer exist are ignored; new columns keep their defaults.</summary>
     public void ApplyLayout(TableLayout layout)
@@ -63,7 +63,7 @@ public sealed class TableColumns : IReadOnlyList<TableColumn>
         {
             if (_columns.FirstOrDefault(c => c.Key == saved.Key) is { } column)
             {
-                column.Width = saved.Width;
+                column.Width = saved.Width ?? column.DefaultWidth;
                 column.IsVisible = saved.IsVisible;
             }
         }

@@ -49,4 +49,5 @@ public sealed record WindowPlacement(int X, int Y, int Width, int Height, bool I
 /// <summary>The columns of a table as the user arranged them, and its sort order.</summary>
 public sealed record TableLayout(IReadOnlyList<ColumnLayout> Columns, string? SortColumn, bool SortDescending);
 
-public sealed record ColumnLayout(string Key, double Width, bool IsVisible);
+/// <param name="Width">Null while the column has its default width, so changed defaults take effect.</param>
+public sealed record ColumnLayout(string Key, double? Width, bool IsVisible);

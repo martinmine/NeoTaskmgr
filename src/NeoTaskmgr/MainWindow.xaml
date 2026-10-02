@@ -5,8 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="NeoTaskmgr">
     <Window.SystemBackdrop>
-        <MicaBackdrop />
-    </Window.SystemBackdrop>
+    <DesktopAcrylicBackdrop/>
+  </Window.SystemBackdrop>
 
     <Grid x:Name="RootGrid" Loaded="RootGrid_Loaded">
         <Grid.KeyboardAccelerators>

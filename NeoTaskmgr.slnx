@@ -1,7 +1,8 @@
 <Solution>
   <Configurations>
-    <Platform Name="x64" />
     <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
   </Configurations>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
@@ -12,10 +13,25 @@
     <File Path="docs/PLAN.md" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/NeoTaskmgr.Core/NeoTaskmgr.Core.csproj" />
-    <Project Path="src/NeoTaskmgr/NeoTaskmgr.csproj" />
+    <Project Path="src/NeoTaskmgr.Core/NeoTaskmgr.Core.csproj">
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Deploy Solution="*|x64" />
+    </Project>
+    <Project Path="src/NeoTaskmgr/NeoTaskmgr.csproj" >
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Deploy Solution="*|x64" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/NeoTaskmgr.Core.Tests/NeoTaskmgr.Core.Tests.csproj" />
+    <Project Path="tests/NeoTaskmgr.Core.Tests/NeoTaskmgr.Core.Tests.csproj" >
+      <Platform Solution="*|ARM64" Project="ARM64" />
+      <Platform Solution="*|x64" Project="x64" />
+      <Platform Solution="*|x86" Project="x86" />
+      <Deploy Solution="*|x64" />
+    </Project>
   </Folder>
 </Solution>

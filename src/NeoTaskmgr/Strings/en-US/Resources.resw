@@ -505,6 +505,9 @@
   <data name="StatSlotsUsed" xml:space="preserve">
     <value>Slots used</value>
   </data>
+  <data name="PropertyLabel" xml:space="preserve">
+    <value>{0}:</value>
+  </data>
   <data name="SlotsUsedValue" xml:space="preserve">
     <value>{0} of {1}</value>
   </data>

@@ -21,14 +21,14 @@ public sealed class MemoryViewModel : PerformanceDeviceViewModel
         Description = Format.Size(info.InstalledBytes);
         _inUse = AddStat("StatInUse");
         _available = AddStat("StatAvailable");
-        _committed = AddStat("StatCommitted");
+        _committed = AddStat("StatCommitted", newRow: true);
         _cached = AddStat("StatCached");
-        _pagedPool = AddStat("StatPagedPool");
+        _pagedPool = AddStat("StatPagedPool", newRow: true);
         _nonPagedPool = AddStat("StatNonPagedPool");
-        AddStat("StatSpeed").Value = info.SpeedMts is { } speed ? $"{speed.ToString(CultureInfo.CurrentCulture)} MT/s" : Strings.Get("NotAvailable");
-        AddStat("StatSlotsUsed").Value = info.SlotsTotal > 0 ? Strings.Format("SlotsUsedValue", info.SlotsUsed, info.SlotsTotal) : Strings.Get("NotAvailable");
-        AddStat("StatFormFactor").Value = info.FormFactor ?? Strings.Get("NotAvailable");
-        _hardwareReserved = AddStat("StatHardwareReserved");
+        AddProperty("StatSpeed").Value = info.SpeedMts is { } speed ? $"{speed.ToString(CultureInfo.CurrentCulture)} MT/s" : Strings.Get("NotAvailable");
+        AddProperty("StatSlotsUsed").Value = info.SlotsTotal > 0 ? Strings.Format("SlotsUsedValue", info.SlotsUsed, info.SlotsTotal) : Strings.Get("NotAvailable");
+        AddProperty("StatFormFactor").Value = info.FormFactor ?? Strings.Get("NotAvailable");
+        _hardwareReserved = AddProperty("StatHardwareReserved");
     }
 
     /// <summary>Relative sizes of the parts of physical memory, for the composition bar.</summary>

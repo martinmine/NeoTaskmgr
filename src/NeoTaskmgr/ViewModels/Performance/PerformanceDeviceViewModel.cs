@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using NeoTaskmgr.Mvvm;
 
 namespace NeoTaskmgr.ViewModels.Performance;
@@ -41,7 +40,7 @@ public sealed class GraphHistory(double maximum = 100) : ObservableObject
     }
 }
 
-/// <summary>A labeled value in the statistics below the graphs.</summary>
+/// <summary>A labeled value below the graphs: a large statistic, or a fact in the list beside them.</summary>
 public sealed class StatViewModel(string label) : ObservableObject
 {
     private string _value = string.Empty;
@@ -53,6 +52,12 @@ public sealed class StatViewModel(string label) : ObservableObject
         get => _value;
         set => SetProperty(ref _value, value);
     }
+}
+
+/// <summary>A row of statistics below the graphs.</summary>
+public sealed class StatRow
+{
+    public List<StatViewModel> Stats { get; } = [];
 }
 
 /// <summary>A device on the Performance page: an entry in the device list and the details shown when it is selected.</summary>
@@ -101,15 +106,31 @@ public abstract class PerformanceDeviceViewModel(string key, PerformanceDeviceKi
     /// <summary>An optional second series for the device list graph.</summary>
     public virtual GraphHistory? SecondaryHistory => null;
 
-    public ObservableCollection<StatViewModel> Stats { get; } = [];
+    /// <summary>The statistics shown in large text below the graphs, in rows like Task Manager.</summary>
+    public List<StatRow> StatRows { get; } = [];
+
+    /// <summary>The facts listed beside the statistics, such as the base speed or capacity.</summary>
+    public List<StatViewModel> Properties { get; } = [];
 
     /// <summary>Used by the list view as the device's accessible name, e.g. "CPU 6% 4.13 GHz".</summary>
     public override string ToString() => string.Join(", ", new[] { Title, Subtitle, Detail }.Where(s => s.Length > 0));
 
-    protected StatViewModel AddStat(string labelKey)
+    protected StatViewModel AddStat(string labelKey, bool newRow = false)
     {
+        if (newRow || StatRows.Count == 0)
+        {
+            StatRows.Add(new StatRow());
+        }
+
         var stat = new StatViewModel(Strings.Get(labelKey));
-        Stats.Add(stat);
+        StatRows[^1].Stats.Add(stat);
         return stat;
+    }
+
+    protected StatViewModel AddProperty(string labelKey)
+    {
+        var property = new StatViewModel(Strings.Format("PropertyLabel", Strings.Get(labelKey)));
+        Properties.Add(property);
+        return property;
     }
 }

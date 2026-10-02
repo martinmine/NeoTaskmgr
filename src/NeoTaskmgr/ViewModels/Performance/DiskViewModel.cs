@@ -21,12 +21,12 @@ public sealed class DiskViewModel : PerformanceDeviceViewModel
     {
         _activeTime = AddStat("StatActiveTime");
         _responseTime = AddStat("StatResponseTime");
-        _readSpeed = AddStat("StatReadSpeed");
+        _readSpeed = AddStat("StatReadSpeed", newRow: true);
         _writeSpeed = AddStat("StatWriteSpeed");
-        _capacity = AddStat("StatCapacity");
-        _formatted = AddStat("StatFormatted");
-        _systemDisk = AddStat("StatSystemDisk");
-        _type = AddStat("StatType");
+        _capacity = AddProperty("StatCapacity");
+        _formatted = AddProperty("StatFormatted");
+        _systemDisk = AddProperty("StatSystemDisk");
+        _type = AddProperty("StatType");
     }
 
     public GraphHistory ReadHistory { get; } = new();

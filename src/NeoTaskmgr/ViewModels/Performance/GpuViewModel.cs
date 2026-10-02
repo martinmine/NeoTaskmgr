@@ -23,8 +23,8 @@ public sealed class GpuViewModel : PerformanceDeviceViewModel
         SharedMemoryHistory = new GraphHistory(info.SharedMemoryBytes);
         _utilization = AddStat("StatUtilization");
         _dedicatedMemory = AddStat("StatDedicatedGpuMemory");
+        _gpuMemory = AddStat("StatGpuMemory", newRow: true);
         _sharedMemory = AddStat("StatSharedGpuMemory");
-        _gpuMemory = AddStat("StatGpuMemory");
     }
 
     /// <summary>Up to four engine graphs, chosen when the first sample arrives.</summary>

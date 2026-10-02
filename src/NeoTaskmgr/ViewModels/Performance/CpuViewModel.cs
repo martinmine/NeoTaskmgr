@@ -21,18 +21,18 @@ public sealed class CpuViewModel : PerformanceDeviceViewModel
         Description = info.Name;
         _utilization = AddStat("StatUtilization");
         _speed = AddStat("StatSpeed");
-        _processes = AddStat("StatProcesses");
+        _processes = AddStat("StatProcesses", newRow: true);
         _threads = AddStat("StatThreads");
         _handles = AddStat("StatHandles");
-        _uptime = AddStat("StatUptime");
-        AddStat("StatBaseSpeed").Value = Format.Gigahertz(info.BaseSpeedMhz);
-        AddStat("StatSockets").Value = info.Sockets.ToString(CultureInfo.CurrentCulture);
-        AddStat("StatCores").Value = info.Cores.ToString(CultureInfo.CurrentCulture);
-        AddStat("StatLogicalProcessors").Value = info.LogicalProcessors.ToString(CultureInfo.CurrentCulture);
-        AddStat("StatVirtualization").Value = Strings.Get(info.IsVirtualizationEnabled ? "Enabled" : "Disabled");
-        AddStat("StatL1Cache").Value = Format.Size(info.L1CacheBytes);
-        AddStat("StatL2Cache").Value = Format.Size(info.L2CacheBytes);
-        AddStat("StatL3Cache").Value = Format.Size(info.L3CacheBytes);
+        _uptime = AddStat("StatUptime", newRow: true);
+        AddProperty("StatBaseSpeed").Value = Format.Gigahertz(info.BaseSpeedMhz);
+        AddProperty("StatSockets").Value = info.Sockets.ToString(CultureInfo.CurrentCulture);
+        AddProperty("StatCores").Value = info.Cores.ToString(CultureInfo.CurrentCulture);
+        AddProperty("StatLogicalProcessors").Value = info.LogicalProcessors.ToString(CultureInfo.CurrentCulture);
+        AddProperty("StatVirtualization").Value = Strings.Get(info.IsVirtualizationEnabled ? "Enabled" : "Disabled");
+        AddProperty("StatL1Cache").Value = Format.Size(info.L1CacheBytes);
+        AddProperty("StatL2Cache").Value = Format.Size(info.L2CacheBytes);
+        AddProperty("StatL3Cache").Value = Format.Size(info.L3CacheBytes);
 
         for (var i = 0; i < info.LogicalProcessors; i++)
         {

@@ -11,6 +11,11 @@
         <Style x:Key="GraphLabelStyle" BasedOn="{StaticResource CaptionTextBlockStyle}" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />
         </Style>
+        <Style x:Key="StatValueStyle" BasedOn="{StaticResource BodyTextBlockStyle}" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="LineHeight" Value="28" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+        </Style>
 
         <pages:PerformanceTemplateSelector x:Key="GraphsTemplateSelector">
             <pages:PerformanceTemplateSelector.CpuTemplate>
@@ -298,11 +303,16 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="{x:Bind ViewModel.SelectedDevice.Title, Mode=OneWay}" />
+                <TextBlock
+                    FontWeight="Normal"
+                    Style="{StaticResource TitleTextBlockStyle}"
+                    Text="{x:Bind ViewModel.SelectedDevice.Title, Mode=OneWay}" />
                 <TextBlock
                     Grid.Column="1"
+                    Margin="0,0,0,4"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Bottom"
+                    FontSize="16"
                     Style="{StaticResource BodyTextBlockStyle}"
                     Text="{x:Bind ViewModel.SelectedDevice.Description, Mode=OneWay}"
                     TextTrimming="CharacterEllipsis" />
@@ -316,27 +326,60 @@
                 ContentTemplateSelector="{StaticResource GraphsTemplateSelector}"
                 IsTabStop="False" />
 
-            <ItemsRepeater Grid.Row="2" ItemsSource="{x:Bind ViewModel.SelectedDevice.Stats, Mode=OneWay}">
-                <ItemsRepeater.Layout>
-                    <UniformGridLayout
-                        ItemsStretch="Fill"
-                        MinColumnSpacing="16"
-                        MinItemWidth="150"
-                        MinRowSpacing="8" />
-                </ItemsRepeater.Layout>
-                <ItemsRepeater.ItemTemplate>
-                    <DataTemplate x:DataType="perf:StatViewModel">
-                        <StackPanel>
-                            <TextBlock Style="{StaticResource GraphLabelStyle}" Text="{x:Bind Label}" />
-                            <TextBlock
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="{x:Bind Value, Mode=OneWay}"
-                                TextTrimming="CharacterEllipsis"
-                                ToolTipService.ToolTip="{x:Bind Value, Mode=OneWay}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsRepeater.ItemTemplate>
-            </ItemsRepeater>
+            <!-- Like Task Manager: large statistics in rows, with a list of facts to their right. -->
+            <Grid Grid.Row="2" ColumnSpacing="24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <ItemsRepeater ItemsSource="{x:Bind ViewModel.SelectedDevice.StatRows, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Spacing="8" />
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="perf:StatRow">
+                            <ItemsRepeater ItemsSource="{x:Bind Stats}">
+                                <ItemsRepeater.Layout>
+                                    <StackLayout Orientation="Horizontal" Spacing="16" />
+                                </ItemsRepeater.Layout>
+                                <ItemsRepeater.ItemTemplate>
+                                    <DataTemplate x:DataType="perf:StatViewModel">
+                                        <StackPanel MinWidth="56">
+                                            <TextBlock Style="{StaticResource GraphLabelStyle}" Text="{x:Bind Label}" />
+                                            <TextBlock Style="{StaticResource StatValueStyle}" Text="{x:Bind Value, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsRepeater.ItemTemplate>
+                            </ItemsRepeater>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+                <ItemsRepeater Grid.Column="1" ItemsSource="{x:Bind ViewModel.SelectedDevice.Properties, Mode=OneWay}">
+                    <ItemsRepeater.Layout>
+                        <StackLayout Spacing="2" />
+                    </ItemsRepeater.Layout>
+                    <ItemsRepeater.ItemTemplate>
+                        <DataTemplate x:DataType="perf:StatViewModel">
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="112" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Style="{StaticResource GraphLabelStyle}"
+                                    Text="{x:Bind Label}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Style="{StaticResource CaptionTextBlockStyle}"
+                                    Text="{x:Bind Value, Mode=OneWay}"
+                                    TextTrimming="CharacterEllipsis"
+                                    ToolTipService.ToolTip="{x:Bind Value, Mode=OneWay}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsRepeater.ItemTemplate>
+                </ItemsRepeater>
+            </Grid>
         </Grid>
     </Grid>
 </Page>

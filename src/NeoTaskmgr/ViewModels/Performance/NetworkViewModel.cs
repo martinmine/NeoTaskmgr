@@ -20,12 +20,12 @@ public sealed class NetworkViewModel : PerformanceDeviceViewModel
     public NetworkViewModel(string key) : base(key, PerformanceDeviceKind.Network)
     {
         _send = AddStat("StatSend");
-        _receive = AddStat("StatReceive");
-        _adapterName = AddStat("StatAdapterName");
-        _connectionType = AddStat("StatConnectionType");
-        _ipv4 = AddStat("StatIPv4");
-        _ipv6 = AddStat("StatIPv6");
-        _linkSpeed = AddStat("StatLinkSpeed");
+        _receive = AddStat("StatReceive", newRow: true);
+        _adapterName = AddProperty("StatAdapterName");
+        _connectionType = AddProperty("StatConnectionType");
+        _ipv4 = AddProperty("StatIPv4");
+        _ipv6 = AddProperty("StatIPv6");
+        _linkSpeed = AddProperty("StatLinkSpeed");
     }
 
     public GraphHistory SendHistory { get; } = new();

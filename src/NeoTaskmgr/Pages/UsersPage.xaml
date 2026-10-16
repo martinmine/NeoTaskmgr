@@ -6,7 +6,8 @@
     xmlns:controls="using:NeoTaskmgr.Controls"
     xmlns:local="using:NeoTaskmgr"
     xmlns:pages="using:NeoTaskmgr.Pages"
-    xmlns:vm="using:NeoTaskmgr.ViewModels">
+    xmlns:vm="using:NeoTaskmgr.ViewModels"
+    KeyboardAcceleratorPlacementMode="Hidden">
     <Page.KeyboardAccelerators>
         <KeyboardAccelerator Key="Delete" Invoked="EndTaskAccelerator_Invoked" />
     </Page.KeyboardAccelerators>

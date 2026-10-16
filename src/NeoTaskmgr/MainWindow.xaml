@@ -8,7 +8,10 @@
     <DesktopAcrylicBackdrop/>
   </Window.SystemBackdrop>
 
-    <Grid x:Name="RootGrid" Loaded="RootGrid_Loaded">
+    <Grid
+        x:Name="RootGrid"
+        KeyboardAcceleratorPlacementMode="Hidden"
+        Loaded="RootGrid_Loaded">
         <Grid.KeyboardAccelerators>
             <KeyboardAccelerator
                 Key="F"
